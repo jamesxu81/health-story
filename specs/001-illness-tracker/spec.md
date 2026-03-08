@@ -119,6 +119,12 @@ Clarification questions were asked to reduce architectural ambiguity before plan
   - Impact: Simpler backend implementation; users must know exact illness name or use faceted filters; no Elasticsearch required
   - Updated: FR-009 requirement, search/filter specification
 
+### Post-Clarification Additions
+
+- **Mobile-First Design** → User specified app must work well on mobile views
+  - Impact: Primary interface is mobile (iOS/Android); desktop is secondary; affects UX decisions, navigation patterns, input methods
+  - Added: 7 new Non-Functional Requirements (NFR-001 to NFR-007) for mobile responsiveness, touch targets, load performance, mobile UX patterns
+
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
@@ -138,6 +144,16 @@ Clarification questions were asked to reduce architectural ambiguity before plan
 - **FR-013**: System MUST validate that illness name and date are provided before allowing record creation; symptoms and cause are optional
 - **FR-014**: System MUST enforce a maximum file size of 25MB on photo uploads to support high-resolution medical images
 - **FR-015**: System MUST provide users the ability to edit existing illness records (with change history optional)
+
+### Non-Functional Requirements
+
+- **NFR-001**: Application MUST be fully responsive and optimized for mobile devices (iOS/Android) as primary interface
+- **NFR-002**: Mobile UI MUST work seamlessly on screens from 5" to 6.7" (phone) and 7" to 13" (tablet)
+- **NFR-003**: All core user workflows (create record, upload photo, view history, add treatment) MUST be completable on mobile without horizontal scrolling
+- **NFR-004**: Photo uploads from mobile camera MUST preview before upload and show progress indicator
+- **NFR-005**: Touch targets (buttons, form fields) MUST be minimum 44x44 pixels for accessibility
+- **NFR-006**: Application MUST load and render within 3 seconds on standard 4G mobile networks (typical latency 50-100ms)
+- **NFR-007**: Interface MUST follow mobile UX best practices: bottom-sheet modals, native date/time pickers, simplified navigation
 
 ### Key Entities
 
@@ -180,7 +196,9 @@ Clarification questions were asked to reduce architectural ambiguity before plan
 ## Assumptions
 
 - Users will record illnesses with reasonable accuracy (dates, symptoms, causes)
-- Photos will be from standard smartphone or camera sources (reasonable file sizes)
+- **[NEW]** Mobile devices (iPhone/Android) are the primary interface; desktop access is secondary but supported
+- **[NEW]** Users access the app frequently from mobile to record new illnesses and view recent history
+- Photos will be from standard smartphone or camera sources (reasonable file sizes); 25MB limit accommodates high-res mobile photos
 - The application is primarily for personal use (single-user per account, not shared medical records)
 - Data retention policy: Records are kept indefinitely unless user deletes them
 - Internet connection required for photo upload and cloud sync; multi-device access requires backend connectivity
