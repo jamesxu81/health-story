@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+dist
+build
+.next
+.env.local
+.env.*.local
+*.sqlite
+*.db
+.git
+.gitignore
+README.md
