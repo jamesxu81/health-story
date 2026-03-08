@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-illness-tracker`  
 **Created**: 2026-03-08  
-**Status**: Draft  
+**Status**: Ready for Planning  
 **Input**: User description: "Build an application that can help me organize my health records. illness can be recorded with detailed symptoms, what caused it and upload photos if needed, and should able to view history for same ill, and find the cure used, timeline, trend etc"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -101,6 +101,24 @@ A user wants to see patterns and trends across their illness history. This inclu
 - What happens if user deletes an illness record—is it permanently deleted or archived?
 - How does system handle when user has no records yet?
 
+## Clarifications
+
+### Session 2026-03-08
+
+Clarification questions were asked to reduce architectural ambiguity before planning phase:
+
+- **Q1: Illness Resolution Mechanism** → A: User explicitly marks illness as resolved and provides end date
+  - Impact: Data model includes `date_ended` and `status` field; enables accurate recovery time calculations for trend analysis
+  - Updated: Illness Record entity definition, recovery time SC-007
+
+- **Q2: Multi-Device Access Strategy** → B: Full multi-device sync with cloud backend deployed on Vercel
+  - Impact: Requires cloud backend infrastructure; real-time sync across devices; backend handles data persistence and sync logic
+  - Updated: Assumptions section, deployment platform specification
+
+- **Q3: Search Strategy** → C: Database filter only (exact name match, no full-text search)
+  - Impact: Simpler backend implementation; users must know exact illness name or use faceted filters; no Elasticsearch required
+  - Updated: FR-009 requirement, search/filter specification
+
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
@@ -113,7 +131,7 @@ A user wants to see patterns and trends across their illness history. This inclu
 - **FR-006**: System MUST organize illness history chronologically (most recent first)
 - **FR-007**: System MUST allow users to add, edit, and delete treatments/cures associated with an illness
 - **FR-008**: System MUST allow marking treatments as effective or ineffective for reference
-- **FR-009**: System MUST support searching/filtering illness history by illness name, date range, or symptoms
+- **FR-009**: System MUST support filtering illness history by exact illness name match, date range, or individual symptom match (no full-text search)
 - **FR-010**: System MUST provide trend analysis showing frequency of recurrent illnesses
 - **FR-011**: System MUST calculate and display average recovery time for each illness type
 - **FR-012**: System MUST generate seasonal trend insights if sufficient data exists
@@ -124,8 +142,9 @@ A user wants to see patterns and trends across their illness history. This inclu
 ### Key Entities
 
 - **Illness Record**: Represents a single illness episode
-  - Attributes: ID, name, date_started, date_ended (optional), symptoms (array), cause, notes
+  - Attributes: ID, name, date_started, date_ended (optional; user-specified when marking resolved), symptoms (array), cause, notes, status (active/resolved)
   - Relationships: Has many Photos, Has many Treatments, Has many History entries
+  - Resolution Logic: User explicitly marks illness as resolved and provides `date_ended`; enables accurate recovery time calculations
 
 - **Symptom**: Describes a symptom of an illness
   - Attributes: ID, name, severity (mild/moderate/severe), duration
@@ -164,9 +183,12 @@ A user wants to see patterns and trends across their illness history. This inclu
 - Photos will be from standard smartphone or camera sources (reasonable file sizes)
 - The application is primarily for personal use (single-user per account, not shared medical records)
 - Data retention policy: Records are kept indefinitely unless user deletes them
-- Internet connection required for photo upload; core recording can work offline if designed
+- Internet connection required for photo upload and cloud sync; multi-device access requires backend connectivity
 - Authentication is handled separately (out of scope for this feature)
 - Data privacy/security compliance follows general best practices: all data encrypted at rest and in transit, users can request data deletion, activity logging for security audits
+- **[CLARIFIED]** Application deploys to Vercel with cloud backend for multi-device sync and real-time data availability
+- **[CLARIFIED]** Users access records from multiple devices; cloud backend synchronizes data in real-time across devices
+- **[CLARIFIED]** Illness resolution is explicit: users mark an illness as resolved and provide end date for recovery time tracking
 
 ## Open Questions
 

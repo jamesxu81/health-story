@@ -2,7 +2,9 @@
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning  
 **Created**: 2026-03-08  
-**Feature**: [spec.md](../spec.md)
+**Updated**: 2026-03-08 (after `/speckit.clarify` session)  
+**Feature**: [spec.md](../spec.md)  
+**Status**: ✅ READY FOR PLANNING
 
 ## Content Quality
 
@@ -29,31 +31,25 @@
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
 
-## Clarifications Resolved
+## Clarifications Resolved ✅
 
-All 3 clarification questions have been answered by the user:
+Session 1 (2026-03-08): Initial 3 clarifications resolved
+- Q1: Input validation (name + date required only)
+- Q2: Photo upload size (25MB max)
+- Q3: Privacy compliance (general best practices)
 
-### Clarification 1: Input Validation Rules ✅ RESOLVED
-**Answer**: Only name and date are required; other fields (symptoms, cause, photos) are optional  
-**Impact**: Faster illness recording, encourages users to create records quickly, detailed information can be added later  
-**Implementation**: FR-013 updated
+Session 2 (2026-03-08): Architecture clarifications resolved
+- Q1: **Illness Resolution** → User explicitly marks with end date
+- Q2: **Multi-Device Sync** → Cloud backend on Vercel with real-time sync
+- Q3: **Search Strategy** → Database filter only (exact name match)
 
-### Clarification 2: Photo Upload File Size Limit ✅ RESOLVED
-**Answer**: 25MB maximum file size for photo uploads  
-**Impact**: Supports high-resolution medical images (test results, detailed lesion photos, X-rays); may require compression UI for very large files  
-**Implementation**: FR-014 updated
+## Summary
 
-### Clarification 3: Data Privacy & Compliance ✅ RESOLVED
-**Answer**: General best practices (encryption at rest/in transit, user data deletion, security audit logging)  
-**Impact**: No HIPAA/GDPR requirements; simpler compliance but user responsible for sensitive data; suitable for personal health tracking app  
-**Implementation**: Assumptions section updated
+- ✅ Initial 3 clarifications (validation, file size, compliance) integrated: Session 1
+- ✅ Architecture clarifications (resolution logic, deployment, search) integrated: Session 2
+- ✅ Specification now fully disambiguated for planning phase
+- ✅ All functional requirements testable and unambiguous
+- ✅ Data model complete with multi-device sync architecture
+- ✅ No critical ambiguities remain
 
-## Notes
-
-- Specification is well-structured and user-focused
-- User stories are properly prioritized with clear P1/P2/P3 levels
-- Edge cases identified appropriately
-- Trend analysis feature correctly deprioritized as P3
-- All 5 user stories are independently testable
-
-**STATUS**: ✅ All clarifications resolved - **READY FOR PLANNING** (`/speckit.plan`)
+**STATUS**: ✅ **READY FOR `/speckit.plan`** — All clarifications complete, spec is architecture-ready
