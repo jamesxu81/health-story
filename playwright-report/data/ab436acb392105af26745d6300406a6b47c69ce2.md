@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - link "Health Story" [ref=e6]:
+          - /url: /
+        - generic [ref=e7]:
+          - link "Record New" [ref=e8]:
+            - /url: /record
+          - link "History" [ref=e9]:
+            - /url: /history
+    - generic [ref=e10]:
+      - generic [ref=e12]:
+        - heading "Record New Illness" [level=1] [ref=e13]
+        - paragraph [ref=e14]: Document a new illness in your health history
+      - generic [ref=e17]:
+        - paragraph [ref=e19]: name is required
+        - generic [ref=e20]:
+          - generic [ref=e21]: Illness Name *
+          - textbox "Illness Name *" [ref=e22]:
+            - /placeholder: e.g., Common Cold, Flu, Headache
+          - paragraph [ref=e23]: 0/255 characters
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: Date Started *
+            - textbox "Date Started *" [ref=e27]
+          - generic [ref=e28]:
+            - generic [ref=e29]: Date Ended (if resolved)
+            - textbox "Date Ended (if resolved)" [ref=e30]
+        - generic [ref=e32]:
+          - generic [ref=e33]: Add Symptoms
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]: Symptom Name *
+              - textbox "Symptom name (e.g., Cough, Fever, Headache)" [ref=e37]
+            - generic [ref=e38]:
+              - generic [ref=e39]:
+                - generic [ref=e40]: Severity
+                - combobox [ref=e41]:
+                  - option "Mild" [selected]
+                  - option "Moderate"
+                  - option "Severe"
+              - generic [ref=e42]:
+                - generic [ref=e43]: Duration
+                - textbox "Duration (e.g., 3 days)" [ref=e44]
+            - button "Add Symptom" [disabled] [ref=e45]
+        - generic [ref=e46]:
+          - generic [ref=e47]: Likely Cause
+          - textbox "Likely Cause" [ref=e48]:
+            - /placeholder: e.g., Exposure at work, Ate bad food
+        - generic [ref=e49]:
+          - generic [ref=e50]: Additional Notes
+          - textbox "Additional Notes" [ref=e51]:
+            - /placeholder: Any additional information about this illness...
+          - paragraph [ref=e52]: 0/5000 characters
+        - generic [ref=e53]:
+          - button "Save Illness Record" [ref=e54]
+          - button "Cancel" [ref=e55]
+  - alert [ref=e56]
+```

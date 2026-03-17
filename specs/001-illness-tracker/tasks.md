@@ -169,15 +169,15 @@ Users can create a detailed illness record with name, date, symptoms, and cause.
 
 **Frontend Components**:
 
-- [ ] T026 [P] [US1] Create IllnessForm component in src/components/Forms/IllnessForm.tsx with validation
-- [ ] T027 [P] [US1] Create SymptomInput sub-component for dynamic symptom list in src/components/Forms/SymptomInput.tsx
-- [ ] T028 [US1] Create record/page.tsx (new illness form page) in app/(dashboard)/record/page.tsx
-- [ ] T029 [P] [US1] Create unit tests for IllnessForm in tests/components/Forms/IllnessForm.test.tsx
-- [ ] T030 [US1] Create component tests for SymptomInput in tests/components/Forms/SymptomInput.test.tsx
+- [x] T026 [P] [US1] Create IllnessForm component in src/components/Forms/IllnessForm.tsx with validation
+- [x] T027 [P] [US1] Create SymptomInput sub-component for dynamic symptom list in src/components/Forms/SymptomInput.tsx
+- [x] T028 [US1] Create record/page.tsx (new illness form page) in app/(dashboard)/record/page.tsx
+- [x] T029 [P] [US1] Create unit tests for IllnessForm in tests/components/Forms/IllnessForm.test.tsx
+- [x] T030 [US1] Create component tests for SymptomInput in tests/components/Forms/SymptomInput.test.tsx
 
 **E2E Testing**:
 
-- [ ] T031 [US1] Create E2E test for record illness workflow in tests/e2e/01-record-illness.e2e.ts
+- [x] T031 [US1] Create E2E test for record illness workflow in tests/e2e/01-record-illness.e2e.ts
 
 ---
 
@@ -198,21 +198,21 @@ Users can view all past illness records organized chronologically. System displa
 
 **Database & API**:
 
-- [ ] T032 [P] [US3] Create database query for listing illnesses in src/lib/db/queries.ts
-- [ ] T033 [P] [US3] Create database query for fetching single illness detail (with treatments/photos) in src/lib/db/queries.ts
+- [x] T032 [P] [US3] Create database query for listing illnesses in src/lib/db/queries/history.ts
+- [x] T033 [P] [US3] Create database query for fetching single illness detail (with treatments/photos) in src/lib/db/queries/history.ts
 
 **Frontend Components**:
 
-- [ ] T034 [P] [US3] Create IllnessCard component in src/components/Cards/IllnessCard.tsx (displays list item)
-- [ ] T035 [P] [US3] Create IllnessList component in src/components/Lists/IllnessList.tsx (handles pagination)
-- [ ] T036 [US3] Create IllnessDetail component in src/components/Detail/IllnessDetail.tsx (full record view)
-- [ ] T037 [US3] Create history/page.tsx in app/(dashboard)/history/page.tsx
-- [ ] T038 [P] [US3] Create unit tests for IllnessCard in tests/components/Cards/IllnessCard.test.tsx
-- [ ] T039 [P] [US3] Create component tests for IllnessList in tests/components/Lists/IllnessList.test.tsx
+- [x] T034 [P] [US3] Create IllnessCard component in src/components/Cards/IllnessCard.tsx (displays list item)
+- [x] T035 [P] [US3] Create IllnessList component in src/components/Lists/IllnessList.tsx (handles pagination)
+- [x] T036 [US3] Create IllnessDetail component in src/components/Detail/IllnessDetail.tsx (full record view)
+- [x] T037 [US3] Create history/page.tsx and history/[id]/page.tsx in app/(dashboard)/history/
+- [x] T038 [P] [US3] Create unit tests for IllnessCard in tests/components/Cards/IllnessCard.test.tsx
+- [x] T039 [P] [US3] Create component tests for IllnessList in tests/components/Lists/IllnessList.test.tsx
 
 **E2E Testing**:
 
-- [ ] T040 [US3] Create E2E test for view history workflow in tests/e2e/03-view-history.e2e.ts
+- [x] T040 [US3] Create E2E test for view history workflow in tests/e2e/03-view-history.e2e.ts
 
 ---
 
@@ -233,21 +233,21 @@ Users can add, edit, and track treatments for an illness record. System allows m
 
 **Database & API**:
 
-- [ ] T041 [P] [US4] Create POST /api/illnesses/[id]/treatments endpoint in app/api/illnesses/[id]/treatments/route.ts
-- [ ] T042 [P] [US4] Create GET /api/illnesses/[id]/treatments endpoint in app/api/illnesses/[id]/treatments/route.ts
-- [ ] T043 [US4] Create PUT /api/illnesses/[id]/treatments/[treatmentId] endpoint in app/api/illnesses/[id]/treatments/[treatmentId]/route.ts
-- [ ] T044 [US4] Create DELETE /api/illnesses/[id]/treatments/[treatmentId] endpoint in app/api/illnesses/[id]/treatments/[treatmentId]/route.ts
-- [ ] T045 [P] [US4] Create integration tests for treatment API in tests/integration/treatment-api.test.ts
+- [x] T041 [P] [US4] Create POST /api/illnesses/[id]/treatments endpoint in app/api/illnesses/[id]/treatments/route.ts
+- [x] T042 [P] [US4] Create GET /api/illnesses/[id]/treatments endpoint in app/api/illnesses/[id]/treatments/route.ts
+- [x] T043 [US4] Create PUT /api/illnesses/[id]/treatments/[treatmentId] endpoint in app/api/illnesses/[id]/treatments/[treatmentId]/route.ts
+- [x] T044 [US4] Create DELETE /api/illnesses/[id]/treatments/[treatmentId] endpoint in app/api/illnesses/[id]/treatments/[treatmentId]/route.ts
+- [x] T045 [P] [US4] Create integration tests for treatment API in tests/integration/treatment-api.test.ts
 
 **Frontend Components**:
 
-- [ ] T046 [P] [US4] Create TreatmentForm component in src/components/Forms/TreatmentForm.tsx
-- [ ] T047 [P] [US4] Create TreatmentList subcomponent in src/components/Lists/TreatmentList.tsx
-- [ ] T048 [US4] Create component tests for TreatmentForm in tests/components/Forms/TreatmentForm.test.tsx
+- [x] T046 [P] [US4] Create TreatmentForm component in src/components/Forms/TreatmentForm.tsx
+- [x] T047 [P] [US4] Create TreatmentList subcomponent in src/components/Lists/TreatmentList.tsx
+- [x] T048 [US4] Create component tests for TreatmentForm in tests/components/Forms/TreatmentForm.test.tsx
 
 **E2E Testing**:
 
-- [ ] T049 [US4] Create E2E test for track treatments workflow in tests/e2e/04-track-treatments.e2e.ts
+- [x] T049 [US4] Create E2E test for track treatments workflow in tests/e2e/04-track-treatments.e2e.ts
 
 ---
 
