@@ -69,12 +69,12 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command: 'npm run dev',
-      url: 'http://localhost:3000',
-      reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
-    },
-  ],
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    // In local dev we usually already have `npm run dev` running.
+    // Always reuse it to avoid "port already in use" failures.
+    reuseExistingServer: true,
+    timeout: 120 * 1000,
+  },
 });

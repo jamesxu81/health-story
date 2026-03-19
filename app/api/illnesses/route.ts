@@ -36,6 +36,7 @@ export async function GET(request: NextRequest): Promise<
       date_from: searchParams.get('date_from'),
       date_to: searchParams.get('date_to'),
       search: searchParams.get('search'),
+      family_member_id: searchParams.get('family_member_id'),
       limit: searchParams.get('limit') || '50',
       offset: searchParams.get('offset') || '0',
     };
@@ -45,9 +46,10 @@ export async function GET(request: NextRequest): Promise<
     // Get illnesses from database
     const { illnesses, total } = await getIllnessesByUser({
       user_id,
-      status: validated.status,
-      date_from: validated.date_from,
-      date_to: validated.date_to,
+      status: validated.status ?? undefined,
+      date_from: validated.date_from ?? undefined,
+      date_to: validated.date_to ?? undefined,
+      family_member_id: validated.family_member_id ?? undefined,
       limit: validated.limit,
       offset: validated.offset,
     });

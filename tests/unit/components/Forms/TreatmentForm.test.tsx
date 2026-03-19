@@ -6,7 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TreatmentForm } from '@/src/components/Forms/Treatment/TreatmentForm';
+import { TreatmentForm } from '@/components/Forms/Treatment/TreatmentForm';
 import { CreateTreatmentPayload, UpdateTreatmentPayload } from '@/types/treatment';
 
 describe('TreatmentForm Component', () => {

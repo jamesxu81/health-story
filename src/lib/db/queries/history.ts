@@ -7,7 +7,7 @@ import {
   query,
   queryOne,
   queryAll,
-} from '@/src/lib/db';
+} from '@/lib/db';
 import { Illness, IllnessWithCounts } from '@/types/illness';
 
 /**

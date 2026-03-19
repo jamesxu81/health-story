@@ -78,7 +78,7 @@ export function TreatmentList({
     return (
       <div className="p-6 text-center bg-slate-50 border border-slate-200 rounded-lg">
         <p className="text-slate-600 mb-3">No treatments recorded yet.</p>
-        <p className="text-sm text-slate-500">Add a treatment to track what you're using.</p>
+        <p className="text-sm text-slate-500">Add a treatment to track what you&apos;re using.</p>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export function TreatmentList({
             {/* Notes if present */}
             {treatment.notes && (
               <p className="text-sm text-slate-700 mb-3 p-2 bg-slate-50 rounded italic border-l-2 border-slate-300">
-                "{treatment.notes}"
+                &quot;{treatment.notes}&quot;
               </p>
             )}
 

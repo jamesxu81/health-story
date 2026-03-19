@@ -1,0 +1,27 @@
+# Build & dependencies
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Test artifacts
+playwright-report/
+test-results/
+coverage/
+
+# Database & Docker
+postgres_data/
+.docker/
+volumes/
+
+# Logs & temp
+*.log
+*.tmp
+tmp/
+temp/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

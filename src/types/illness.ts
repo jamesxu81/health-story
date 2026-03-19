@@ -19,6 +19,7 @@ export interface Illness {
   symptoms: Symptom[];
   cause: string | null;
   notes: string | null;
+  family_member_id: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -31,6 +32,8 @@ export interface IllnessWithCounts extends Illness {
   photo_count: number;
   treatment_count: number;
   recovery_days: number | null; // null if still active
+  family_member_name?: string | null;
+  family_member_color?: string | null;
 }
 
 /**
@@ -47,6 +50,7 @@ export interface IllnessRow {
   symptoms: string; // JSON stringified
   cause: string | null;
   notes: string | null;
+  family_member_id: string | null;
   created_at: string; // ISO timestamp
   updated_at: string; // ISO timestamp
 }
@@ -65,4 +69,5 @@ export interface IllnessInput {
   }>;
   cause?: string | null;
   notes?: string | null;
+  family_member_id?: string | null;
 }

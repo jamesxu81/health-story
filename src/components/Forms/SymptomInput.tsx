@@ -1,10 +1,5 @@
 'use client';
 
-/**
- * SymptomInput Component
- * Dynamic form for adding/editing symptoms to an illness
- */
-
 import React, { useState, useCallback } from 'react';
 import { Symptom } from '@/types/illness';
 
@@ -14,10 +9,19 @@ interface SymptomInputProps {
 }
 
 const SEVERITY_OPTIONS = [
-  { value: 'mild', label: 'Mild' },
-  { value: 'moderate', label: 'Moderate' },
-  { value: 'severe', label: 'Severe' },
+  { value: 'mild', label: 'Mild', activeBg: 'bg-slate-100 text-slate-700 border-slate-300', emoji: '😐' },
+  { value: 'moderate', label: 'Moderate', activeBg: 'bg-amber-50 text-amber-700 border-amber-300', emoji: '😷' },
+  { value: 'severe', label: 'Severe', activeBg: 'bg-red-50 text-red-700 border-red-300', emoji: '🤒' },
 ] as const;
+
+const CHIP_COLORS: Record<string, string> = {
+  mild: 'bg-slate-100 text-slate-700 border-slate-200',
+  moderate: 'bg-amber-50 text-amber-700 border-amber-200',
+  severe: 'bg-red-50 text-red-700 border-red-200',
+};
+
+const inputClasses =
+  'w-full px-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl text-[15px] text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-colors';
 
 export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
   const [nameInput, setNameInput] = useState('');
@@ -26,16 +30,12 @@ export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
 
   const handleAddSymptom = useCallback(() => {
     if (!nameInput.trim()) return;
-
     const newSymptom: Symptom = {
       name: nameInput.trim(),
       severity: severityInput,
       duration: durationInput.trim() || null,
     };
-
     onChange([...symptoms, newSymptom]);
-
-    // Reset inputs
     setNameInput('');
     setSeverityInput('mild');
     setDurationInput('');
@@ -60,103 +60,97 @@ export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-slate-700">Add Symptoms</label>
+      {/* Add symptom card */}
+      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+        <label className="block text-[13px] font-semibold text-slate-600 mb-4">
+          Add Symptoms
+        </label>
 
-        {/* Input form */}
-        <div className="space-y-2 p-4 bg-white border border-slate-200 rounded-lg">
+        <div className="space-y-5">
+          <input
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Symptom name (e.g., Cough, Fever, Headache)"
+            className={inputClasses}
+            maxLength={100}
+          />
+
+          {/* Severity segmented control */}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
-              Symptom Name *
-            </label>
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Symptom name (e.g., Cough, Fever, Headache)"
-              className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              minLength={1}
-              maxLength={100}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Severity</label>
-              <select
-                value={severityInput}
-                onChange={(e) =>
-                  setSeverityInput(e.target.value as 'mild' | 'moderate' | 'severe')
-                }
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              >
-                {SEVERITY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
+            <span className="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-2">
+              Severity
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {SEVERITY_OPTIONS.map((opt) => {
+                const isActive = severityInput === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setSeverityInput(opt.value)}
+                    className={`flex items-center justify-center gap-1.5 py-2.5 text-[13px] font-semibold rounded-xl border-2 transition-all min-h-[48px] ${
+                      isActive
+                        ? opt.activeBg + ' shadow-sm'
+                        : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300 hover:text-slate-500'
+                    }`}
+                  >
+                    <span className="text-base">{opt.emoji}</span>
                     {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Duration</label>
-              <input
-                type="text"
-                value={durationInput}
-                onChange={(e) => setDurationInput(e.target.value)}
-                placeholder="Duration (e.g., 3 days)"
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                maxLength={100}
-              />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          <input
+            type="text"
+            value={durationInput}
+            onChange={(e) => setDurationInput(e.target.value)}
+            placeholder="Duration (e.g., 3 days)"
+            className={inputClasses}
+            maxLength={100}
+          />
+        </div>
+
+        <div className="mt-6">
           <button
             type="button"
             onClick={handleAddSymptom}
             disabled={!nameInput.trim()}
-            className="w-full px-3 py-2 bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-300 text-white font-medium rounded-md text-sm transition-colors min-h-[44px]"
+            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[14px] font-semibold rounded-xl transition-colors min-h-[48px]"
           >
             Add Symptom
           </button>
         </div>
       </div>
 
-      {/* Symptoms list */}
+      {/* Symptom chips */}
       {symptoms.length > 0 && (
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">
+        <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+          <label className="block text-[13px] font-semibold text-slate-600 mb-3">
             Added Symptoms ({symptoms.length})
           </label>
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {symptoms.map((symptom, index) => (
-              <div
+              <span
                 key={index}
-                className="flex items-start justify-between gap-2 p-3 bg-slate-50 border border-slate-200 rounded-md"
+                className={`inline-flex items-center gap-1.5 pl-3 pr-1.5 py-2 rounded-full text-[13px] font-medium border ${CHIP_COLORS[symptom.severity] || CHIP_COLORS.mild}`}
               >
-                <div className="flex-1">
-                  <p className="font-medium text-sm text-slate-900">{symptom.name}</p>
-                  <div className="flex gap-2 mt-1">
-                    <span className="inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">
-                      {symptom.severity}
-                    </span>
-                    {symptom.duration && (
-                      <span className="inline-block px-2 py-0.5 text-xs bg-slate-200 text-slate-600 rounded">
-                        {symptom.duration}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                {symptom.name}
+                {symptom.duration && (
+                  <span className="text-[11px] opacity-60">({symptom.duration})</span>
+                )}
                 <button
                   type="button"
                   onClick={() => handleRemoveSymptom(index)}
-                  className="px-2 py-1 text-sm font-medium text-red-600 hover:bg-red-50 rounded min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  className="w-7 h-7 rounded-full hover:bg-black/10 flex items-center justify-center text-current ml-0.5"
                   aria-label={`Remove ${symptom.name}`}
                 >
-                  Remove
+                  ×
                 </button>
-              </div>
+              </span>
             ))}
           </div>
         </div>

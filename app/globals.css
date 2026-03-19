@@ -11,6 +11,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -20,16 +21,13 @@ body {
   line-height: 1.5;
 }
 
-/* Mobile safe area support */
 @supports (padding: max(0px)) {
   body {
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
   }
 }
 
-/* Touch target minimum size */
 button,
 a[role='button'],
 input[type='checkbox'],
@@ -38,13 +36,7 @@ input[type='radio'] {
   min-width: 44px;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Focus visible for accessibility */
 :focus-visible {
-  outline: 2px solid hsl(200, 100%, 50%);
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
 }

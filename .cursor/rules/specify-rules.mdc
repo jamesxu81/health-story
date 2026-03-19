@@ -1,0 +1,41 @@
+---
+description: Speckit-style workflow (Cursor)
+globs: ["**/*"]
+alwaysApply: true
+---
+
+## Spec-driven workflow (Speckit-style)
+
+When working on a feature, follow this order and keep artifacts in sync:
+
+1. `specs/<feature>/spec.md` (what/why; user stories; acceptance)
+2. `specs/<feature>/plan.md` (how; architecture; risks; decisions)
+3. `specs/<feature>/tasks.md` (ordered, actionable checklist)
+4. Implementation PRs that mark tasks complete in `tasks.md`
+
+### Operating rules
+
+- Prefer editing the existing feature files rather than creating parallel docs.
+- If you must assume something, write it explicitly in `spec.md` (Assumptions) and reflect it in `plan.md`.
+- Keep `tasks.md` as the single source of truth for execution order; update checkboxes as work is completed.
+- If a change in implementation invalidates the spec/plan, update the docs immediately.
+
+### Minimal task format (required)
+
+Every task line in `tasks.md` must follow:
+
+- [ ] T001 [P] [US1] Short description with file path(s)
+
+Where:
+- `T###` is sequential and ordered
+- `[P]` only when parallelizable
+- `[US#]` for story-scoped tasks
+- include the file path(s) being changed/created
+
+### Suggested Cursor chat prompts
+
+- “Update `specs/<feature>/spec.md` from this description: …”
+- “Fill in `specs/<feature>/plan.md` for our stack (Next.js + Postgres).”
+- “Generate `specs/<feature>/tasks.md` from spec+plan in strict checklist format.”
+- “Implement tasks T00X–T00Y; update checkboxes in `tasks.md`; keep tests/build green.”
+

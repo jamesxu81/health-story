@@ -42,37 +42,44 @@ export async function getIllnessesByUser(params: {
   status?: 'active' | 'resolved';
   date_from?: string;
   date_to?: string;
+  family_member_id?: string;
   limit: number;
   offset: number;
 }): Promise<{
   illnesses: IllnessWithCounts[];
   total: number;
 }> {
-  let whereClause = 'WHERE user_id = $1';
+  let whereClause = 'WHERE i.user_id = $1';
   const values: any[] = [params.user_id];
   let paramIndex = 2;
 
   if (params.status) {
-    whereClause += ` AND status = $${paramIndex}`;
+    whereClause += ` AND i.status = $${paramIndex}`;
     values.push(params.status);
     paramIndex++;
   }
 
   if (params.date_from) {
-    whereClause += ` AND date_started >= $${paramIndex}`;
+    whereClause += ` AND i.date_started >= $${paramIndex}`;
     values.push(params.date_from);
     paramIndex++;
   }
 
   if (params.date_to) {
-    whereClause += ` AND date_started <= $${paramIndex}`;
+    whereClause += ` AND i.date_started <= $${paramIndex}`;
     values.push(params.date_to);
+    paramIndex++;
+  }
+
+  if (params.family_member_id) {
+    whereClause += ` AND i.family_member_id = $${paramIndex}`;
+    values.push(params.family_member_id);
     paramIndex++;
   }
 
   // Get total count
   const countResult = await queryOne<{ count: string }>(
-    `SELECT COUNT(*) as count FROM illnesses ${whereClause}`,
+    `SELECT COUNT(*) as count FROM illnesses i ${whereClause}`,
     values
   );
   const total = parseInt(countResult?.count || '0', 10);
@@ -82,15 +89,17 @@ export async function getIllnessesByUser(params: {
     `
     SELECT 
       i.id, i.user_id, i.name, i.date_started, i.date_ended, 
-      i.status, i.symptoms, i.cause, i.notes,
+      i.status, i.symptoms, i.cause, i.notes, i.family_member_id,
       i.created_at, i.updated_at,
+      fm.name as family_member_name, fm.color as family_member_color,
       COUNT(DISTINCT t.id) as treatment_count,
       COUNT(DISTINCT p.id) as photo_count
     FROM illnesses i
     LEFT JOIN treatments t ON i.id = t.illness_id
     LEFT JOIN photos p ON i.id = p.illness_id
+    LEFT JOIN family_members fm ON i.family_member_id = fm.id
     ${whereClause}
-    GROUP BY i.id
+    GROUP BY i.id, fm.name, fm.color
     ORDER BY i.date_started DESC
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `,
@@ -106,6 +115,8 @@ export async function getIllnessesByUser(params: {
       ...illness,
       treatment_count: parseInt(row.treatment_count || '0', 10),
       photo_count: parseInt(row.photo_count || '0', 10),
+      family_member_name: row.family_member_name || null,
+      family_member_color: row.family_member_color || null,
       recovery_days: row.date_ended
         ? Math.floor(
             (new Date(row.date_ended).getTime() -
@@ -126,7 +137,7 @@ export async function getIllnessById(illness_id: string): Promise<Illness | null
   const row = await queryOne<IllnessRow>(
     `
     SELECT id, user_id, name, date_started, date_ended, 
-           status, symptoms, cause, notes, created_at, updated_at
+           status, symptoms, cause, notes, family_member_id, created_at, updated_at
     FROM illnesses
     WHERE id = $1
     `,
@@ -149,12 +160,12 @@ export async function createIllness(
   const row = await queryOne<IllnessRow>(
     `
     INSERT INTO illnesses
-    (user_id, name, date_started, date_ended, status, symptoms, cause, notes)
+    (user_id, name, date_started, date_ended, status, symptoms, cause, notes, family_member_id)
     VALUES ($1, $2, $3, $4::date, 
             CASE WHEN $4::date IS NOT NULL THEN 'resolved' ELSE 'active' END,
-            $5::jsonb, $6, $7)
+            $5::jsonb, $6, $7, $8)
     RETURNING id, user_id, name, date_started, date_ended, 
-              status, symptoms, cause, notes, created_at, updated_at
+              status, symptoms, cause, notes, family_member_id, created_at, updated_at
     `,
     [
       user_id,
@@ -164,6 +175,7 @@ export async function createIllness(
       symptomsJson,
       input.cause || null,
       input.notes || null,
+      input.family_member_id || null,
     ]
   );
 
@@ -220,6 +232,12 @@ export async function updateIllness(
     paramIndex++;
   }
 
+  if (input.family_member_id !== undefined) {
+    updates.push(`family_member_id = $${paramIndex}`);
+    values.push(input.family_member_id || null);
+    paramIndex++;
+  }
+
   // Update status if date_ended changed
   if (input.date_ended !== undefined) {
     updates.push(`status = CASE WHEN date_ended IS NOT NULL THEN 'resolved' ELSE 'active' END`);
@@ -240,7 +258,7 @@ export async function updateIllness(
     SET ${updates.join(', ')}
     WHERE id = $1 AND user_id = $2
     RETURNING id, user_id, name, date_started, date_ended, 
-              status, symptoms, cause, notes, created_at, updated_at
+              status, symptoms, cause, notes, family_member_id, created_at, updated_at
     `,
     values
   );
@@ -276,7 +294,7 @@ export async function getIllnessDetail(illness_id: string): Promise<Illness | nu
   const row = await queryOne<IllnessRow>(
     `
     SELECT id, user_id, name, date_started, date_ended, 
-           status, symptoms, cause, notes, created_at, updated_at
+           status, symptoms, cause, notes, family_member_id, created_at, updated_at
     FROM illnesses
     WHERE id = $1
     `,

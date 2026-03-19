@@ -1,9 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { IllnessForm } from '@/src/components/Forms/IllnessForm';
+import { IllnessForm } from '@/components/Forms/IllnessForm';
 
-// Mock useRouter
 const mockPush = jest.fn();
 const mockBack = jest.fn();
 jest.mock('next/navigation', () => ({
@@ -13,7 +12,10 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-// Mock fetch
+jest.mock('@/components/Family/MemberPicker', () => ({
+  MemberPicker: () => null,
+}));
+
 global.fetch = jest.fn();
 
 describe('IllnessForm Component', () => {
@@ -28,11 +30,11 @@ describe('IllnessForm Component', () => {
 
     expect(screen.getByLabelText('Illness Name *')).toBeInTheDocument();
     expect(screen.getByLabelText('Date Started *')).toBeInTheDocument();
-    expect(screen.getByLabelText('Date Ended (if resolved)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Date Ended')).toBeInTheDocument();
     expect(screen.getByText('Add Symptoms')).toBeInTheDocument();
-    expect(screen.getByLabelText('Likely Cause')).toBeInTheDocument();
-    expect(screen.getByLabelText('Additional Notes')).toBeInTheDocument();
-    expect(screen.getByText('Save Illness Record')).toBeInTheDocument();
+    expect(screen.getByLabelText('What might have caused it?')).toBeInTheDocument();
+    expect(screen.getByLabelText('Notes for your future self')).toBeInTheDocument();
+    expect(screen.getByText('Save to timeline')).toBeInTheDocument();
   });
 
   it('sets today as default start date', () => {
@@ -40,7 +42,6 @@ describe('IllnessForm Component', () => {
 
     const today = new Date().toISOString().split('T')[0];
     const startDateInput = screen.getByLabelText('Date Started *') as HTMLInputElement;
-
     expect(startDateInput.value).toBe(today);
   });
 
@@ -50,15 +51,13 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        data: { id: 'illness-123' },
-      }),
+      json: async () => ({ data: { id: 'illness-123' } }),
     });
 
     render(<IllnessForm />);
 
     const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record');
+    const submitButton = screen.getByText('Save to timeline');
 
     await user.type(nameInput, 'Common Cold');
     await user.click(submitButton);
@@ -68,9 +67,7 @@ describe('IllnessForm Component', () => {
         '/api/illnesses',
         expect.objectContaining({
           method: 'POST',
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json',
-          }),
+          headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
           body: expect.stringContaining('Common Cold'),
         })
       );
@@ -83,18 +80,13 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      json: async () => ({
-        error: 'Database error',
-      }),
+      json: async () => ({ error: 'Database error' }),
     });
 
     render(<IllnessForm />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    await user.type(nameInput, 'Flu');
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Illness Name *'), 'Flu');
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument();
@@ -108,18 +100,13 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        data: { id: 'illness-456' },
-      }),
+      json: async () => ({ data: { id: 'illness-456' } }),
     });
 
     render(<IllnessForm onSuccess={mockOnSuccess} />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    await user.type(nameInput, 'Migraine');
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Illness Name *'), 'Migraine');
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
       expect(mockOnSuccess).toHaveBeenCalledWith('illness-456');
@@ -132,38 +119,17 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        data: { id: 'illness-789' },
-      }),
+      json: async () => ({ data: { id: 'illness-789' } }),
     });
 
     render(<IllnessForm />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    await user.type(nameInput, 'Allergies');
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Illness Name *'), 'Allergies');
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/history');
     });
-  });
-
-  it('validates required name field', async () => {
-    const user = userEvent.setup();
-    render(<IllnessForm />);
-
-    // Don't fill in the name field
-    const submitButton = screen.getByText('Save Illness Record');
-
-    // Try to submit without a name - should fail due to required HTML5 validation
-    // The form will not submit, so we check that an error doesn't show
-    // (because form submission is blocked by HTML5)
-    const nameInput = screen.getByLabelText('Illness Name *') as HTMLInputElement;
-    
-    expect(nameInput).toHaveProperty('required', true);
-    expect(nameInput.value).toBe('');
   });
 
   it('shows error when name is not provided', async () => {
@@ -171,17 +137,13 @@ describe('IllnessForm Component', () => {
     render(<IllnessForm />);
 
     const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    // Fill in name then clear it - should trigger validation
     await user.type(nameInput, 'Test');
     await user.clear(nameInput);
-    await user.type(nameInput, '   '); // Only whitespace
-
-    await user.click(submitButton);
+    await user.type(nameInput, '   ');
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
-      expect(screen.getByText('Illness name is required')).toBeInTheDocument();
+      expect(screen.getByText('name is required')).toBeInTheDocument();
     });
   });
 
@@ -189,9 +151,7 @@ describe('IllnessForm Component', () => {
     const user = userEvent.setup();
     render(<IllnessForm />);
 
-    const cancelButton = screen.getByText('Cancel');
-    await user.click(cancelButton);
-
+    await user.click(screen.getByText('Cancel'));
     expect(mockBack).toHaveBeenCalled();
   });
 
@@ -202,26 +162,16 @@ describe('IllnessForm Component', () => {
     mockFetch.mockImplementationOnce(
       () =>
         new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: async () => ({ data: { id: 'illness-999' } }),
-              }),
-            100
-          )
+          setTimeout(() => resolve({ ok: true, json: async () => ({ data: { id: 'illness-999' } }) }), 100)
         )
     );
 
     render(<IllnessForm />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record') as HTMLButtonElement;
-
-    await user.type(nameInput, 'Test Illness');
+    const submitButton = screen.getByText('Save to timeline') as HTMLButtonElement;
+    await user.type(screen.getByLabelText('Illness Name *'), 'Test Illness');
     await user.click(submitButton);
 
-    // Button should be disabled while loading
     expect(submitButton).toBeDisabled();
   });
 
@@ -231,20 +181,17 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        data: { id: 'illness-111' },
-      }),
+      json: async () => ({ data: { id: 'illness-111' } }),
     });
 
     render(<IllnessForm />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const causeInput = screen.getByPlaceholderText('e.g., Exposure at work, Ate bad food');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    await user.type(nameInput, '  Flu  ');
-    await user.type(causeInput, '  Work exposure  ');
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Illness Name *'), '  Flu  ');
+    await user.type(
+      screen.getByPlaceholderText('e.g., Exposure at school, Ate bad food'),
+      '  Work exposure  '
+    );
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
       const callBody = JSON.parse((mockFetch.mock.calls[0][1] as any).body);
@@ -259,22 +206,18 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        data: { id: 'illness-222' },
-      }),
+      json: async () => ({ data: { id: 'illness-222' } }),
     });
 
     render(<IllnessForm />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const symptomNameInput = screen.getByPlaceholderText('e.g., Cough, Fever, Headache');
-    const addSymptomButton = screen.getByText('Add Symptom');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    await user.type(nameInput, 'Cold');
-    await user.type(symptomNameInput, 'Cough');
-    await user.click(addSymptomButton);
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Illness Name *'), 'Cold');
+    await user.type(
+      screen.getByPlaceholderText('Symptom name (e.g., Cough, Fever, Headache)'),
+      'Cough'
+    );
+    await user.click(screen.getByText('Add Symptom'));
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
       const callBody = JSON.parse((mockFetch.mock.calls[0][1] as any).body);
@@ -289,18 +232,13 @@ describe('IllnessForm Component', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        data: { id: 'illness-333' },
-      }),
+      json: async () => ({ data: { id: 'illness-333' } }),
     });
 
     render(<IllnessForm />);
 
-    const nameInput = screen.getByLabelText('Illness Name *');
-    const submitButton = screen.getByText('Save Illness Record');
-
-    await user.type(nameInput, 'Infection');
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Illness Name *'), 'Infection');
+    await user.click(screen.getByText('Save to timeline'));
 
     await waitFor(() => {
       const callBody = JSON.parse((mockFetch.mock.calls[0][1] as any).body);

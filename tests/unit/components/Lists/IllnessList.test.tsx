@@ -1,19 +1,16 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { IllnessList } from '@/src/components/Lists/IllnessList';
+import { IllnessList } from '@/components/Lists/IllnessList';
 import { IllnessWithCounts } from '@/types/illness';
 
-// Mock next/link
 jest.mock('next/link', () => {
   return ({ children, href }: any) => children;
 });
 
-// Mock IllnessCard component  
 jest.mock('@/components/Cards/IllnessCard', () => ({
   IllnessCard: ({ illness }: any) => <div data-testid="illness-card">{illness.name}</div>,
 }));
 
-// Mock global fetch
 global.fetch = jest.fn();
 
 describe('IllnessList Component', () => {
@@ -62,11 +59,10 @@ describe('IllnessList Component', () => {
     expect(screen.getByText('Flu')).toBeInTheDocument();
   });
 
-  it('calculates pagination correctly', () => {
+  it('shows pagination when multiple pages', () => {
     render(<IllnessList initialData={mockIllnesses} totalCount={25} />);
 
-    // 25 items / 10 per page = 3 pages
-    expect(screen.getByText(/Page 1 of 3/)).toBeInTheDocument();
+    expect(screen.getByText('1 / 3')).toBeInTheDocument();
   });
 
   it('disables previous button on first page', () => {
@@ -108,9 +104,8 @@ describe('IllnessList Component', () => {
   });
 
   it('hides pagination with single page', () => {
-    // 2 illnesses with limit of 10 = 1 page (no pagination needed)
     render(<IllnessList initialData={mockIllnesses} totalCount={2} />);
 
-    expect(screen.queryByText(/Page \d+ of \d+/)).not.toBeInTheDocument();
+    expect(screen.queryByText('← Previous')).not.toBeInTheDocument();
   });
 });

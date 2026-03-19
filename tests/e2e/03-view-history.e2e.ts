@@ -43,8 +43,8 @@ test.describe('View Illness History Workflow (T040)', () => {
     // Wait for data to load from API
     await page.waitForTimeout(1000);
     
-    // Verify page loaded
-    await expect(page.locator('h1').first()).toContainText(/history|illnesses/i, { ignoreCase: true });
+    // Verify page loaded (UI copy may change; keep it flexible)
+    await expect(page.locator('h1').first()).toContainText(/timeline|history/i, { ignoreCase: true });
     
     // Verify illness appears in list
     await expect(page.locator(`text=${illnessName}`)).toBeVisible();
@@ -64,30 +64,21 @@ test.describe('View Illness History Workflow (T040)', () => {
   });
 
   test('should navigate to illness detail page when clicking on illness', async ({ page }) => {
-    // Navigate to history page
+    // Create a known illness so navigation is deterministic
+    const illnessName = `Nav Test ${Date.now()}`;
+    await page.goto('/record');
+    await page.locator('input[name="name"]').fill(illnessName);
+    await page.locator('button[type="submit"]').click();
+    await page.waitForURL(/\/(history|record)/, { timeout: 10000 });
+
     await page.goto('/history');
-    
-    // Wait for list to load
-    await page.waitForLoadState('networkidle');
-    
-    // Click on first illness in the list
-    const firstIllness = page.locator('a, button').filter({ has: page.locator('text=/illness|cold|flu|cough|fever/i') }).first();
-    
-    if (await firstIllness.isVisible()) {
-      // Get the illness name or ID before clicking
-      const initialURL = page.url();
-      
-      // Click to navigate to detail
-      await firstIllness.click();
-      
-      // Wait for navigation
-      await page.waitForLoadState('networkidle');
-      
-      // Verify URL changed to detail page
-      const newURL = page.url();
-      expect(newURL).not.toBe(initialURL);
-      expect(newURL).toMatch(/\/history\/[^/]+/);
-    }
+
+    // Click the created illness (link should go to /history/:id)
+    await expect(page.locator(`text=${illnessName}`).first()).toBeVisible({ timeout: 10000 });
+    await page.locator(`a:has-text("${illnessName}")`).first().click();
+
+    await page.waitForURL(/\/history\/[^/]+/, { timeout: 10000 });
+    await expect(page.locator('text=/Illness not found/i')).toHaveCount(0);
   });
 
   test('should display complete illness details on detail page', async ({ page }) => {
@@ -119,8 +110,28 @@ test.describe('View Illness History Workflow (T040)', () => {
       await page.waitForLoadState('networkidle');
       
       // Verify detail page shows the illness info
+      await expect(page.locator('text=/Illness not found/i')).toHaveCount(0);
       await expect(page.locator(`text=${illnessName}`)).toBeVisible();
     }
+  });
+
+  test('regression: clicking a history record should not show "Illness not found"', async ({
+    page,
+  }) => {
+    const illnessName = `History Click Regression ${Date.now()}`;
+    await page.goto('/record');
+    await page.locator('input[name="name"]').fill(illnessName);
+    await page.locator('button[type="submit"]').click();
+    await page.waitForURL(/\/(history|record)/, { timeout: 10000 });
+
+    await page.goto('/history');
+    await expect(page.locator(`text=${illnessName}`).first()).toBeVisible({ timeout: 10000 });
+
+    await page.locator(`a:has-text("${illnessName}")`).first().click();
+    await page.waitForURL(/\/history\/[^/]+/, { timeout: 10000 });
+
+    await expect(page.locator('text=/Illness not found/i')).toHaveCount(0);
+    await expect(page.locator(`text=${illnessName}`)).toBeVisible();
   });
 
   test('should allow navigation back to history list', async ({ page }) => {

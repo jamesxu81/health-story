@@ -24,6 +24,7 @@ export const illnessSchema = z.object({
   symptoms: z.array(symptomSchema).min(0).max(50),
   cause: z.string().max(1000).optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
+  family_member_id: z.string().uuid().nullable().optional(),
 });
 
 /**
@@ -71,7 +72,20 @@ export const illnessFilterSchema = paginationSchema.extend({
   date_from: z.string().date().nullish(),
   date_to: z.string().date().nullish(),
   search: z.string().max(255).nullish(),
+  family_member_id: z.string().uuid().nullish(),
 });
+
+/**
+ * Family member creation/update schema
+ */
+export const familyMemberSchema = z.object({
+  name: z.string().min(1).max(255).trim(),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional().default('#0d9488'),
+  date_of_birth: z.string().date().nullable().optional(),
+  relationship: z.string().max(100).nullable().optional(),
+});
+
+export const familyMemberUpdateSchema = familyMemberSchema.partial();
 
 /**
  * Validate and parse input

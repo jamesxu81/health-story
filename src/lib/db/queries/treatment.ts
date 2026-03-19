@@ -3,7 +3,7 @@
  * Handles all database operations related to treatments
  */
 
-import { queryOne, queryAll, query } from '@/src/lib/db';
+import { queryOne, queryAll, query } from '@/lib/db';
 import { Treatment, CreateTreatmentPayload, UpdateTreatmentPayload } from '@/types/treatment';
 
 /**

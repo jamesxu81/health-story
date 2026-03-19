@@ -8,14 +8,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractUserContext } from '@/lib/auth';
 import { validateInput, illnessUpdateSchema } from '@/lib/validation/schemas';
-import {
-  getIllnessDetail,
-  updateIllness,
-  deleteIllness,
-} from '@/lib/db/queries/illness';
+import { getIllnessDetail, updateIllness, deleteIllness } from '@/lib/db/queries/illness';
 import { ApiResponse } from '@/types/api';
-import { NotFoundError } from '@/lib/errors';
-import { errorToResponse } from '@/lib/errors';
+import { NotFoundError, errorToResponse } from '@/lib/errors';
 
 /**
  * GET /api/illnesses/[id]
@@ -27,7 +22,6 @@ export async function GET(
   try {
     const { id } = params;
 
-    // Get illness from database
     const illness = await getIllnessDetail(id);
     if (!illness) {
       throw new NotFoundError('Illness');
@@ -54,7 +48,6 @@ export async function PUT(
   { params }: { params: { id: string } }
 ): Promise<NextResponse<ApiResponse<any> | any>> {
   try {
-    // Extract user context
     const headers: Record<string, string | string[] | undefined> = {};
     request.headers?.forEach((value, key) => {
       headers[key.toLowerCase()] = value;
@@ -64,11 +57,9 @@ export async function PUT(
     const { user_id } = authContext;
     const { id } = params;
 
-    // Parse and validate body
     const body = await request.json();
     const input = validateInput(illnessUpdateSchema, body);
 
-    // Update illness
     const illness = await updateIllness(id, user_id, input);
 
     const response: ApiResponse<typeof illness> = {
@@ -92,7 +83,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ): Promise<NextResponse<ApiResponse<any> | any>> {
   try {
-    // Extract user context
     const headers: Record<string, string | string[] | undefined> = {};
     request.headers?.forEach((value, key) => {
       headers[key.toLowerCase()] = value;
@@ -102,7 +92,6 @@ export async function DELETE(
     const { user_id } = authContext;
     const { id } = params;
 
-    // Delete illness
     await deleteIllness(id, user_id);
 
     const response: ApiResponse<{ id: string }> = {
@@ -117,3 +106,4 @@ export async function DELETE(
     return NextResponse.json(body, { status });
   }
 }
+
