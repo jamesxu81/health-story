@@ -34,17 +34,28 @@ export function ProfileSwitcher() {
     load();
   }, []);
 
-  if (!focus || loading || members.length === 0) return null;
+  // Always show the control when inside the provider: empty DB (e.g. fresh Vercel)
+  // still gets "Everyone"; hiding when members.length === 0 looked like a missing UI.
+  if (!focus) return null;
+
+  if (loading) {
+    return (
+      <div
+        className="h-11 w-full min-w-[10rem] rounded-xl border border-slate-200 bg-slate-100 animate-pulse"
+        aria-hidden
+      />
+    );
+  }
 
   const selected = members.find((m) => m.id === focus.familyMemberId);
 
   return (
-    <div className="flex items-center justify-end md:justify-start gap-2 w-full min-w-0">
+    <div className="w-full min-w-0">
       <label htmlFor="profile-switcher" className="sr-only">
         Show health for
       </label>
 
-      <div className="relative flex flex-1 sm:flex-initial items-center gap-2 min-w-0 min-h-[44px] rounded-xl border border-slate-200 bg-slate-50 pl-2 pr-9 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent">
+      <div className="relative flex w-full min-w-[10rem] items-center gap-2 min-h-[44px] rounded-xl border border-slate-200 bg-slate-50 pl-2 pr-9 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent">
         <span className="shrink-0 flex items-center justify-center" aria-hidden>
           {selected ? (
             <MemberAvatar name={selected.name} color={selected.color} size="sm" />
@@ -57,6 +68,11 @@ export function ProfileSwitcher() {
 
         <select
           id="profile-switcher"
+          title={
+            members.length === 0
+              ? 'Add people under Family to filter by person'
+              : undefined
+          }
           value={focus.familyMemberId ?? ''}
           onChange={(e) => {
             const v = e.target.value;

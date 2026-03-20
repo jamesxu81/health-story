@@ -59,59 +59,73 @@ export default function DashboardLayout({
     <FamilyFocusProvider>
       <div className="min-h-screen bg-[#f4f5f7]">
         <header className="sticky top-0 z-40 bg-white shadow-sm">
-          {/* Same max width as Home / Timeline / Family so nav sits above content, not at screen edge */}
-          <div className="max-w-5xl mx-auto w-full px-3 xs:px-4 sm:px-6 lg:px-8 py-2 md:py-0 md:min-h-14 md:flex md:flex-wrap md:items-center md:gap-x-3 md:gap-y-2">
-            {/* Logo + profile — one cluster; nav follows on same row on md+ */}
-            <div className="flex w-full items-center justify-between gap-3 md:w-auto md:justify-start md:shrink-0">
-              <Link href="/" className="text-lg sm:text-xl font-bold text-indigo-600 shrink-0">
+          <div className="max-w-5xl mx-auto w-full px-3 xs:px-4 sm:px-6 lg:px-8 py-2">
+            {/* Mobile / tablet: logo + switcher on one row; scroll nav below */}
+            <div className="md:hidden">
+              <div className="flex w-full items-center justify-between gap-3">
+                <Link href="/" className="text-lg sm:text-xl font-bold text-indigo-600 shrink-0 min-w-0">
+                  Health Story
+                </Link>
+                <div className="min-w-0 flex-1 flex justify-end max-w-[min(100%,15rem)] sm:max-w-[16rem] shrink-0 basis-auto">
+                  <ProfileSwitcher />
+                </div>
+              </div>
+              <nav
+                className="flex items-stretch gap-2 sm:gap-2.5 mt-3 -mx-1 px-1 pb-1 overflow-x-auto overscroll-x-contain snap-x snap-mandatory touch-pan-x [scrollbar-width:thin] scroll-px-2"
+                aria-label="Main navigation"
+              >
+                {navItems.map((item) => {
+                  const active = item.match(pathname);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`snap-start shrink-0 min-h-touch-target inline-flex items-center justify-center px-4 sm:px-5 rounded-xl text-base sm:text-[17px] font-semibold leading-none transition-colors active:scale-[0.98] ${
+                        active
+                          ? 'bg-indigo-100 text-indigo-800 ring-2 ring-indigo-200/80'
+                          : 'text-slate-700 bg-slate-100/90 active:bg-slate-200'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Desktop: logo | centered nav | profile — avoids switcher collapsing (min-w-0 shrink) next to logo */}
+            <div className="hidden md:flex md:items-center md:justify-between md:gap-4 md:min-h-14 md:py-1">
+              <Link
+                href="/"
+                className="text-xl font-bold text-indigo-600 shrink-0"
+              >
                 Health Story
               </Link>
-              <div className="min-w-0 max-w-[min(100%,12rem)] sm:max-w-[14rem] md:max-w-[13rem] lg:max-w-xs shrink">
+              <nav
+                className="flex items-center justify-center gap-1.5 lg:gap-2 flex-wrap min-w-0 flex-1 px-2"
+                aria-label="Main navigation"
+              >
+                {navItems.map((item) => {
+                  const active = item.match(pathname);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`min-h-touch-target inline-flex items-center px-4 py-2.5 rounded-xl text-base font-semibold transition-colors whitespace-nowrap ${
+                        active
+                          ? 'bg-indigo-100 text-indigo-800 ring-2 ring-indigo-200/70'
+                          : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+              <div className="shrink-0 w-[min(100%,16rem)] min-w-[11rem] max-w-[18rem]">
                 <ProfileSwitcher />
               </div>
             </div>
-
-            <nav className="hidden md:flex items-center gap-1 flex-wrap shrink-0">
-              {navItems.map((item) => {
-                const active = item.match(pathname);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                      active
-                        ? 'bg-indigo-50 text-indigo-700'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {/* Mobile: horizontal scroll links (always visible; bottom tabs are secondary) */}
-            <nav
-              className="flex md:hidden items-center gap-1.5 mt-2 -mx-1 px-1 overflow-x-auto overscroll-x-contain pb-1 touch-pan-x [scrollbar-width:thin]"
-              aria-label="Main navigation"
-            >
-              {navItems.map((item) => {
-                const active = item.match(pathname);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`shrink-0 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                      active
-                        ? 'bg-indigo-50 text-indigo-700'
-                        : 'text-slate-600 bg-slate-100/80 active:bg-slate-200'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
           </div>
         </header>
 
@@ -125,20 +139,24 @@ export default function DashboardLayout({
           style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
           aria-label="Tab navigation"
         >
-          <div className="max-w-5xl mx-auto grid grid-cols-4 min-h-[3.75rem]">
+          <div className="max-w-5xl mx-auto grid grid-cols-4 min-h-[3.85rem] xs:min-h-16">
             {navItems.map((item) => {
               const active = item.match(pathname);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex flex-col items-center justify-center gap-0.5 text-[10px] xs:text-[11px] font-semibold transition-colors py-2 ${
+                  className={`flex flex-col items-center justify-center gap-1 px-1 text-xs xs:text-[13px] font-semibold transition-colors py-2 active:opacity-90 ${
                     active
-                      ? 'text-indigo-600 bg-indigo-50/90'
-                      : 'text-slate-500 active:bg-slate-100'
+                      ? 'text-indigo-700 bg-indigo-50/90'
+                      : 'text-slate-600 active:bg-slate-100'
                   }`}
                 >
-                  <span className={active ? 'text-indigo-600' : 'text-slate-400'}>{item.icon}</span>
+                  <span
+                    className={`[&_svg]:w-7 [&_svg]:h-7 ${active ? 'text-indigo-600' : 'text-slate-400'}`}
+                  >
+                    {item.icon}
+                  </span>
                   {item.label}
                 </Link>
               );
