@@ -8,24 +8,42 @@ import { Symptom, IllnessInput } from '@/types/illness';
 
 interface IllnessFormProps {
   onSuccess?: (illnessId: string) => void;
+  onCancel?: () => void;
+  initialData?: {
+    id: string;
+    name: string;
+    date_started: Date | string;
+    date_ended: Date | string | null;
+    symptoms: Symptom[];
+    cause: string | null;
+    notes: string | null;
+    family_member_id: string | null;
+  };
 }
 
 const inputClasses =
-  'w-full px-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl text-[15px] text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-colors';
+  'w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors';
 
-export function IllnessForm({ onSuccess }: IllnessFormProps) {
+function toDateString(d: Date | string | null | undefined): string {
+  if (!d) return '';
+  const date = typeof d === 'string' ? d : d.toISOString();
+  return date.split('T')[0];
+}
+
+export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormProps) {
   const router = useRouter();
+  const isEditing = !!initialData;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    date_started: new Date().toISOString().split('T')[0],
-    date_ended: '',
-    symptoms: [] as Symptom[],
-    cause: '',
-    notes: '',
-    family_member_id: null as string | null,
+    name: initialData?.name ?? '',
+    date_started: toDateString(initialData?.date_started) || new Date().toISOString().split('T')[0],
+    date_ended: toDateString(initialData?.date_ended),
+    symptoms: initialData?.symptoms ?? ([] as Symptom[]),
+    cause: initialData?.cause ?? '',
+    notes: initialData?.notes ?? '',
+    family_member_id: initialData?.family_member_id ?? null as string | null,
   });
 
   const handleInputChange = useCallback(
@@ -61,8 +79,11 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
         };
 
         const authToken = localStorage.getItem('auth_token') || 'default-user';
-        const response = await fetch('/api/illnesses', {
-          method: 'POST',
+        const url = isEditing ? `/api/illnesses/${initialData.id}` : '/api/illnesses';
+        const method = isEditing ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
@@ -88,7 +109,7 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
         setLoading(false);
       }
     },
-    [formData, onSuccess, router]
+    [formData, onSuccess, router, isEditing, initialData]
   );
 
   return (
@@ -106,10 +127,10 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
       />
 
       {/* Illness name + dates */}
-      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-        <div className="space-y-5">
+      <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
+        <div className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-[13px] font-semibold text-slate-600 mb-2">
+            <label htmlFor="name" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
               Illness Name *
             </label>
             <input
@@ -124,9 +145,9 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="date_started" className="block text-[13px] font-semibold text-slate-600 mb-2">
+              <label htmlFor="date_started" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
                 Date Started *
               </label>
               <input
@@ -139,7 +160,7 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
               />
             </div>
             <div>
-              <label htmlFor="date_ended" className="block text-[13px] font-semibold text-slate-600 mb-2">
+              <label htmlFor="date_ended" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
                 Date Ended
               </label>
               <input
@@ -159,10 +180,10 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
       <SymptomInput symptoms={formData.symptoms} onChange={handleSymptomsChange} />
 
       {/* Cause & notes */}
-      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-        <div className="space-y-5">
+      <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
+        <div className="space-y-4">
           <div>
-            <label htmlFor="cause" className="block text-[13px] font-semibold text-slate-600 mb-2">
+            <label htmlFor="cause" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
               What might have caused it?
             </label>
             <input
@@ -178,7 +199,7 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
           </div>
 
           <div>
-            <label htmlFor="notes" className="block text-[13px] font-semibold text-slate-600 mb-2">
+            <label htmlFor="notes" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
               Notes for your future self
             </label>
             <textarea
@@ -196,18 +217,18 @@ export function IllnessForm({ onSuccess }: IllnessFormProps) {
       </div>
 
       {/* Actions */}
-      <div className="pt-2 pb-4 space-y-3">
+      <div className="pt-2 pb-4 flex flex-col sm:flex-row-reverse gap-3">
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-[15px] font-semibold rounded-xl transition-colors min-h-[48px] shadow-sm"
+          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-xl transition-colors min-h-[48px] shadow-sm"
         >
-          {loading ? 'Saving...' : 'Save to timeline'}
+          {loading ? 'Saving...' : isEditing ? 'Update record' : 'Save to timeline'}
         </button>
         <button
           type="button"
-          onClick={() => router.back()}
-          className="w-full py-2 text-[14px] font-medium text-slate-400 hover:text-slate-600 transition-colors min-h-[44px]"
+          onClick={() => onCancel ? onCancel() : router.back()}
+          className="flex-1 py-3 text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors min-h-[48px]"
         >
           Cancel
         </button>

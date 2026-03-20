@@ -37,6 +37,7 @@ export async function GET(request: NextRequest): Promise<
       date_to: searchParams.get('date_to'),
       search: searchParams.get('search'),
       family_member_id: searchParams.get('family_member_id'),
+      sort_order: searchParams.get('sort_order'),
       limit: searchParams.get('limit') || '50',
       offset: searchParams.get('offset') || '0',
     };
@@ -49,7 +50,9 @@ export async function GET(request: NextRequest): Promise<
       status: validated.status ?? undefined,
       date_from: validated.date_from ?? undefined,
       date_to: validated.date_to ?? undefined,
+      search: validated.search ?? undefined,
       family_member_id: validated.family_member_id ?? undefined,
+      sort_order: validated.sort_order,
       limit: validated.limit,
       offset: validated.offset,
     });

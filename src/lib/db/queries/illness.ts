@@ -42,7 +42,9 @@ export async function getIllnessesByUser(params: {
   status?: 'active' | 'resolved';
   date_from?: string;
   date_to?: string;
+  search?: string;
   family_member_id?: string;
+  sort_order?: 'asc' | 'desc';
   limit: number;
   offset: number;
 }): Promise<{
@@ -71,11 +73,19 @@ export async function getIllnessesByUser(params: {
     paramIndex++;
   }
 
+  if (params.search) {
+    whereClause += ` AND (i.name ILIKE $${paramIndex} OR i.cause ILIKE $${paramIndex})`;
+    values.push(`%${params.search}%`);
+    paramIndex++;
+  }
+
   if (params.family_member_id) {
     whereClause += ` AND i.family_member_id = $${paramIndex}`;
     values.push(params.family_member_id);
     paramIndex++;
   }
+
+  const sortDirection = params.sort_order === 'asc' ? 'ASC' : 'DESC';
 
   // Get total count
   const countResult = await queryOne<{ count: string }>(
@@ -100,7 +110,7 @@ export async function getIllnessesByUser(params: {
     LEFT JOIN family_members fm ON i.family_member_id = fm.id
     ${whereClause}
     GROUP BY i.id, fm.name, fm.color
-    ORDER BY i.date_started DESC
+    ORDER BY i.date_started ${sortDirection}
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `,
     [...values, params.limit, params.offset]

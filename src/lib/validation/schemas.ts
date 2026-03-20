@@ -73,6 +73,7 @@ export const illnessFilterSchema = paginationSchema.extend({
   date_to: z.string().date().nullish(),
   search: z.string().max(255).nullish(),
   family_member_id: z.string().uuid().nullish(),
+  sort_order: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
 /**
