@@ -20,10 +20,16 @@ export async function GET(
 
     const { user_id } = extractUserContext(headers);
 
+    const rawFm = request.nextUrl.searchParams.get('family_member_id');
+    const familyMemberId =
+      rawFm && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(rawFm)
+        ? rawFm
+        : null;
+
     const [active_illnesses, activityResult, stats] = await Promise.all([
-      getActiveIllnesses(user_id),
-      getRecentActivity(user_id),
-      getDashboardStats(user_id),
+      getActiveIllnesses(user_id, familyMemberId),
+      getRecentActivity(user_id, 10, familyMemberId),
+      getDashboardStats(user_id, familyMemberId),
     ]);
 
     const data: DashboardData = {

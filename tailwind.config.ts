@@ -6,6 +6,10 @@ const config = {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        /** App content max ~1440px for large desktops */
+        app: '90rem',
+      },
       colors: {
         primary: '#0f172a',
         secondary: '#64748b',

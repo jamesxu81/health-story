@@ -25,7 +25,8 @@ export interface DashboardData {
 }
 
 export async function getActiveIllnesses(
-  userId: string
+  userId: string,
+  familyMemberId?: string | null
 ): Promise<IllnessWithCounts[]> {
   const rows = await queryAll<any>(
     `
@@ -41,11 +42,12 @@ export async function getActiveIllnesses(
     LEFT JOIN photos p ON i.id = p.illness_id
     LEFT JOIN family_members fm ON i.family_member_id = fm.id
     WHERE i.user_id = $1 AND i.status = 'active'
+      AND ($2::uuid IS NULL OR i.family_member_id = $2)
     GROUP BY i.id, fm.name, fm.color
     ORDER BY i.date_started DESC
     LIMIT 10
     `,
-    [userId]
+    [userId, familyMemberId ?? null]
   );
 
   return rows.map((row) => ({
@@ -68,8 +70,10 @@ export async function getActiveIllnesses(
 
 export async function getRecentActivity(
   userId: string,
-  limit: number = 10
+  limit: number = 10,
+  familyMemberId?: string | null
 ): Promise<{ events: ActivityEvent[]; hasMore: boolean }> {
+  const fm = familyMemberId ?? null;
   const rows = await queryAll<any>(
     `
     (
@@ -81,6 +85,7 @@ export async function getRecentActivity(
         i.created_at AS timestamp
       FROM illnesses i
       WHERE i.user_id = $1
+        AND ($3::uuid IS NULL OR i.family_member_id = $3)
     )
     UNION ALL
     (
@@ -92,6 +97,7 @@ export async function getRecentActivity(
         i.updated_at AS timestamp
       FROM illnesses i
       WHERE i.user_id = $1 AND i.date_ended IS NOT NULL
+        AND ($3::uuid IS NULL OR i.family_member_id = $3)
     )
     UNION ALL
     (
@@ -104,11 +110,12 @@ export async function getRecentActivity(
       FROM treatments t
       JOIN illnesses i ON t.illness_id = i.id
       WHERE i.user_id = $1
+        AND ($3::uuid IS NULL OR i.family_member_id = $3)
     )
     ORDER BY timestamp DESC
     LIMIT $2
     `,
-    [userId, limit + 1]
+    [userId, limit + 1, fm]
   );
 
   const hasMore = rows.length > limit;
@@ -127,8 +134,10 @@ export async function getRecentActivity(
 }
 
 export async function getDashboardStats(
-  userId: string
+  userId: string,
+  familyMemberId?: string | null
 ): Promise<DashboardStats> {
+  const fm = familyMemberId ?? null;
   const countsRow = await queryOne<any>(
     `
     SELECT
@@ -143,8 +152,9 @@ export async function getDashboardStats(
       ))::int AS avg_recovery_days
     FROM illnesses
     WHERE user_id = $1
+      AND ($2::uuid IS NULL OR family_member_id = $2)
     `,
-    [userId]
+    [userId, fm]
   );
 
   const mostCommonRow = await queryOne<any>(
@@ -152,11 +162,12 @@ export async function getDashboardStats(
     SELECT name, COUNT(*)::int AS count
     FROM illnesses
     WHERE user_id = $1
+      AND ($2::uuid IS NULL OR family_member_id = $2)
     GROUP BY name
     ORDER BY count DESC, name ASC
     LIMIT 1
     `,
-    [userId]
+    [userId, fm]
   );
 
   return {

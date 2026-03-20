@@ -26,6 +26,10 @@ coverage/
 **/*.test.js
 **/*.spec.js
 
+# Playwright
+playwright-report/
+test-results/
+
 # IDE & Editor
 .vscode/
 .idea/

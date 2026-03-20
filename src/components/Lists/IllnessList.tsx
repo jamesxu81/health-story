@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { IllnessCard } from '@/components/Cards/IllnessCard';
 import { IllnessWithCounts } from '@/types/illness';
+import { useFamilyFocus } from '@/context/FamilyFocusContext';
 
 interface IllnessListProps {
   initialData?: IllnessWithCounts[];
@@ -11,6 +12,9 @@ interface IllnessListProps {
 }
 
 export function IllnessList({ initialData = [], totalCount = 0, status }: IllnessListProps) {
+  const focus = useFamilyFocus();
+  const familyMemberId = focus?.familyMemberId ?? null;
+
   const [illnesses, setIllnesses] = useState<IllnessWithCounts[]>(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +37,7 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
           offset: offset.toString(),
         });
         if (status) params.append('status', status);
+        if (familyMemberId) params.append('family_member_id', familyMemberId);
 
         const authToken = localStorage.getItem('auth_token') || 'default-user';
         const response = await fetch(`/api/illnesses?${params}`, {
@@ -53,7 +58,7 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
       }
     };
     fetchIllnesses();
-  }, [offset, status, initialData.length]);
+  }, [offset, status, initialData.length, familyMemberId]);
 
   if (error) {
     return (

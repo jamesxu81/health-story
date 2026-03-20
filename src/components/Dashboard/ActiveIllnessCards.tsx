@@ -40,9 +40,9 @@ export function ActiveIllnessCards({ illnesses }: ActiveIllnessCardsProps) {
               href={`/history/${illness.id}`}
               className="block hover:no-underline"
             >
-              <article className="flex bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                <div className="w-1.5 bg-red-400 flex-shrink-0" />
-                <div className="flex-1 p-4">
+              <article className="flex bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-slate-100 min-h-touch-target">
+                <div className="w-2 sm:w-2.5 flex-shrink-0 bg-gradient-to-b from-rose-400 via-red-400 to-amber-400" />
+                <div className="flex-1 p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <h3 className="text-sm font-semibold text-slate-800 flex-1">
                       {illness.name}

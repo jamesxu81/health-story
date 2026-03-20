@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { IllnessWithCounts } from '@/types/illness';
+import { useFamilyFocus } from '@/context/FamilyFocusContext';
 import { EmptyState } from './EmptyState';
 import { ActiveIllnessCards } from './ActiveIllnessCards';
 import { ActivityFeed, ActivityEvent } from './ActivityFeed';
@@ -15,33 +16,42 @@ interface DashboardData {
 }
 
 export function DashboardContent() {
+  const focus = useFamilyFocus();
+  const familyMemberId = focus?.familyMemberId ?? null;
+
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMoreActivity, setHasMoreActivity] = useState(false);
 
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const authToken = localStorage.getItem('auth_token') || 'default-user';
-        const res = await fetch('/api/dashboard', {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || `Failed to load dashboard (${res.status})`);
-        }
-        const json = await res.json();
-        setData(json.data);
-        setHasMoreActivity(json.data.recent_activity.length >= 10);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Something went wrong');
-      } finally {
-        setLoading(false);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const authToken = localStorage.getItem('auth_token') || 'default-user';
+      const qs = new URLSearchParams();
+      if (familyMemberId) qs.set('family_member_id', familyMemberId);
+      const q = qs.toString();
+      const res = await fetch(`/api/dashboard${q ? `?${q}` : ''}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Failed to load dashboard (${res.status})`);
       }
-    };
-    fetchDashboard();
-  }, []);
+      const json = await res.json();
+      setData(json.data);
+      setHasMoreActivity(json.data.recent_activity.length >= 10);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }, [familyMemberId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (loading) {
     return (
@@ -62,7 +72,8 @@ export function DashboardContent() {
       <div className="p-6 bg-white rounded-2xl shadow-sm text-center">
         <p className="text-red-600 font-medium text-sm mb-3">{error}</p>
         <button
-          onClick={() => window.location.reload()}
+          type="button"
+          onClick={() => load()}
           className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium min-h-[44px]"
         >
           Retry

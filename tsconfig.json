@@ -25,6 +25,7 @@
       "@/services/*": ["./src/services/*"],
       "@/styles/*": ["./src/styles/*"],
       "@/hooks/*": ["./src/hooks/*"],
+      "@/context/*": ["./src/context/*"],
       "@/src/*": ["./src/*"]
     },
     "plugins": [
