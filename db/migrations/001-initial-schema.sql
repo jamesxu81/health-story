@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS illnesses (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes for common queries
-CREATE INDEX idx_illnesses_user_date ON illnesses(user_id, date_started DESC);
-CREATE INDEX idx_illnesses_user_status ON illnesses(user_id, status);
-CREATE INDEX idx_illnesses_name ON illnesses(name);
+-- Create indexes for common queries (IF NOT EXISTS: safe when migrations run every Vercel build)
+CREATE INDEX IF NOT EXISTS idx_illnesses_user_date ON illnesses(user_id, date_started DESC);
+CREATE INDEX IF NOT EXISTS idx_illnesses_user_status ON illnesses(user_id, status);
+CREATE INDEX IF NOT EXISTS idx_illnesses_name ON illnesses(name);
 
 -- Create treatments table
 CREATE TABLE IF NOT EXISTS treatments (
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS treatments (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_treatments_illness ON treatments(illness_id);
+CREATE INDEX IF NOT EXISTS idx_treatments_illness ON treatments(illness_id);
 
 -- Create photos table
 CREATE TABLE IF NOT EXISTS photos (
@@ -59,4 +59,4 @@ CREATE TABLE IF NOT EXISTS photos (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_photos_illness ON photos(illness_id);
+CREATE INDEX IF NOT EXISTS idx_photos_illness ON photos(illness_id);
