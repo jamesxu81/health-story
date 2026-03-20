@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/run-migrations.js && next build",
+    "migrate": "node scripts/run-migrations.js",
     "start": "next start",
     "lint": "next lint",
     "test:watch": "jest --watch",

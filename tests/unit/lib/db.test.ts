@@ -39,14 +39,17 @@ describe('Database Utilities', () => {
       expect(pool).toBeDefined();
     });
 
-    it('should throw if DATABASE_URL is not set', () => {
+    it('should throw if no database URL is set', () => {
       delete process.env.DATABASE_URL;
+      delete process.env.POSTGRES_URL;
       jest.resetModules();
       const { initializePool: initPool } = require('../../../src/lib/db');
-      
+
       expect(() => {
         initPool();
-      }).toThrow('DATABASE_URL environment variable is not set');
+      }).toThrow(
+        'DATABASE_URL or POSTGRES_URL environment variable is not set'
+      );
     });
 
     it('should return same pool instance on multiple calls', () => {
