@@ -23,7 +23,7 @@ export function ActiveIllnessCards({ illnesses }: ActiveIllnessCardsProps) {
 
   return (
     <section aria-label="Active sick days">
-      <h2 className="text-base font-semibold text-slate-800 mb-3">
+      <h2 className="text-lg font-semibold text-slate-900 mb-3">
         {illnesses.length} active sick day
         {illnesses.length !== 1 ? 's' : ''}
       </h2>
@@ -38,46 +38,47 @@ export function ActiveIllnessCards({ illnesses }: ActiveIllnessCardsProps) {
             <Link
               key={illness.id}
               href={`/history/${illness.id}`}
-              className="block hover:no-underline"
+              className="block hover:no-underline group"
             >
-              <article className="flex bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-slate-100 min-h-touch-target">
-                <div className="w-2 sm:w-2.5 flex-shrink-0 bg-gradient-to-b from-rose-400 via-red-400 to-amber-400" />
-                <div className="flex-1 p-4 sm:p-5">
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <h3 className="text-sm font-semibold text-slate-800 flex-1">
-                      {illness.name}
-                    </h3>
-                    <span className="px-2 py-0.5 text-[11px] font-bold rounded-full bg-red-100 text-red-700 whitespace-nowrap">
-                      Day {days + 1}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-2">
-                    {illness.family_member_name && (
-                      <span
-                        className="inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full text-white"
-                        style={{ backgroundColor: illness.family_member_color || '#64748b' }}
-                      >
-                        {illness.family_member_name}
-                      </span>
-                    )}
-                    <span className="text-xs text-slate-400">
-                      Started{' '}
-                      {new Date(illness.date_started).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-3 text-[11px] text-slate-500">
-                    <span>{symptomCount} symptom{symptomCount !== 1 ? 's' : ''}</span>
-                    <span>{illness.treatment_count} treatment{illness.treatment_count !== 1 ? 's' : ''}</span>
-                  </div>
-
-                  {isLingering && (
-                    <p className="mt-2 text-[11px] text-amber-600 font-medium">
-                      Still going? You can mark it resolved
-                    </p>
-                  )}
+              <article className="bg-white rounded-2xl shadow-card group-hover:shadow-card-hover transition-all overflow-hidden border border-slate-200/60 p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <h3 className="text-sm font-semibold text-slate-900 flex-1 truncate">
+                    {illness.name}
+                  </h3>
+                  <span className={`px-2.5 py-1 text-[11px] font-semibold rounded-full whitespace-nowrap ${
+                    isLingering
+                      ? 'bg-red-50 text-red-600'
+                      : 'bg-amber-50 text-amber-600'
+                  }`}>
+                    Day {days + 1}
+                  </span>
                 </div>
+
+                <div className="flex items-center gap-2 mb-2.5">
+                  {illness.family_member_name && (
+                    <span
+                      className="inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full text-white"
+                      style={{ backgroundColor: illness.family_member_color || '#64748b' }}
+                    >
+                      {illness.family_member_name}
+                    </span>
+                  )}
+                  <span className="text-xs text-slate-400">
+                    Started{' '}
+                    {new Date(illness.date_started).toLocaleDateString()}
+                  </span>
+                </div>
+
+                <div className="flex gap-3 text-xs text-slate-500">
+                  <span>{symptomCount} symptom{symptomCount !== 1 ? 's' : ''}</span>
+                  <span>{illness.treatment_count} treatment{illness.treatment_count !== 1 ? 's' : ''}</span>
+                </div>
+
+                {isLingering && (
+                  <p className="mt-2.5 text-xs text-amber-600 font-medium">
+                    Still going? You can mark it resolved
+                  </p>
+                )}
               </article>
             </Link>
           );
@@ -85,9 +86,9 @@ export function ActiveIllnessCards({ illnesses }: ActiveIllnessCardsProps) {
       </div>
 
       {overflow > 0 && (
-        <p className="text-xs text-slate-400 mt-3 text-center">
+        <p className="text-xs text-slate-400 mt-4 text-center">
           and {overflow} more&hellip;{' '}
-          <Link href="/history?status=active" className="text-indigo-500 hover:underline">
+          <Link href="/history?status=active" className="text-indigo-600 font-medium hover:underline">
             View all
           </Link>
         </p>

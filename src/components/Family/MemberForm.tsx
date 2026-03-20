@@ -29,7 +29,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const inputClasses =
-    'w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white';
+    'w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white transition-colors';
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -87,7 +87,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       )}
 
       <div>
-        <label htmlFor="member-name" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label htmlFor="member-name" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
           Name *
         </label>
         <input
@@ -102,7 +102,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">Color</label>
+        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Color</label>
         <div className="flex gap-2.5 flex-wrap">
           {PRESET_COLORS.map((c) => (
             <button
@@ -120,7 +120,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       </div>
 
       <div>
-        <label htmlFor="member-relationship" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label htmlFor="member-relationship" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
           Relationship
         </label>
         <select
@@ -140,7 +140,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       </div>
 
       <div>
-        <label htmlFor="member-dob" className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label htmlFor="member-dob" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
           Date of birth (optional)
         </label>
         <input
@@ -152,18 +152,18 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
         />
       </div>
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex flex-col sm:flex-row-reverse gap-3 pt-2">
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition-colors min-h-[44px]"
+          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-xl transition-colors min-h-[44px]"
         >
           {loading ? 'Saving...' : member ? 'Update' : 'Add member'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-5 py-3 bg-white border border-slate-200 text-slate-600 font-medium rounded-xl hover:bg-slate-50 transition-colors min-h-[44px]"
+          className="flex-1 sm:flex-initial px-5 py-3 border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors min-h-[44px]"
         >
           Cancel
         </button>

@@ -6,8 +6,10 @@ const config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+      },
       maxWidth: {
-        /** App content max ~1440px for large desktops */
         app: '90rem',
       },
       colors: {
@@ -31,6 +33,10 @@ const config = {
       },
       minWidth: {
         'touch-target': '44px',
+      },
+      boxShadow: {
+        card: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04)',
+        'card-hover': '0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)',
       },
     },
   },

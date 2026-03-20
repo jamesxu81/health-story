@@ -58,23 +58,23 @@ export function DashboardContent() {
       <div className="space-y-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-white rounded-2xl shadow-sm animate-pulse" />
+            <div key={i} className="h-[120px] bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
           ))}
         </div>
-        <div className="h-40 bg-white rounded-2xl shadow-sm animate-pulse" />
-        <div className="h-64 bg-white rounded-2xl shadow-sm animate-pulse" />
+        <div className="h-40 bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
+        <div className="h-64 bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-white rounded-2xl shadow-sm text-center">
+      <div className="p-6 bg-white rounded-2xl shadow-card border border-slate-200/60 text-center">
         <p className="text-red-600 font-medium text-sm mb-3">{error}</p>
         <button
           type="button"
           onClick={() => load()}
-          className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium min-h-[44px]"
+          className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors text-sm font-medium min-h-[44px]"
         >
           Retry
         </button>

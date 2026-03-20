@@ -55,7 +55,7 @@ export function ProfileSwitcher() {
         Show health for
       </label>
 
-      <div className="relative flex w-full min-w-[10rem] items-center gap-2 min-h-[44px] rounded-xl border border-slate-200 bg-slate-50 pl-2 pr-9 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent">
+      <div className="relative flex w-full min-w-[10rem] items-center gap-2 min-h-[40px] rounded-lg border border-slate-200 bg-white pl-2 pr-9 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500">
         <span className="shrink-0 flex items-center justify-center" aria-hidden>
           {selected ? (
             <MemberAvatar name={selected.name} color={selected.color} size="sm" />
@@ -78,7 +78,7 @@ export function ProfileSwitcher() {
             const v = e.target.value;
             focus.setFamilyMemberId(v === '' ? null : v);
           }}
-          className="flex-1 min-w-0 cursor-pointer appearance-none border-0 bg-transparent py-2 text-left text-[13px] font-semibold text-slate-800 outline-none focus:ring-0 truncate"
+          className="flex-1 min-w-0 cursor-pointer appearance-none border-0 bg-transparent py-2 text-left text-xs font-medium text-slate-700 outline-none focus:ring-0 truncate"
         >
           <option value="">Everyone</option>
           {members.map((m) => (

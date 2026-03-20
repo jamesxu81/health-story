@@ -74,21 +74,21 @@ export function StatsSnapshot({ stats }: StatsSnapshotProps) {
 
   return (
     <section aria-label="Health stats">
-      <h2 className="text-base font-semibold text-slate-800 mb-3">
+      <h2 className="text-lg font-semibold text-slate-900 mb-3">
         At a glance
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {tiles.map((tile) => (
           <div
             key={tile.label}
-            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3"
+            className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-5 flex items-center gap-3"
           >
             <span className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${tile.iconBg}`}>
               {tile.icon}
             </span>
             <div className="min-w-0">
-              <p className="text-lg font-bold text-slate-800 leading-tight truncate">{tile.value}</p>
-              <p className="text-[11px] text-slate-400 leading-tight">{tile.label}</p>
+              <p className="text-2xl font-bold text-slate-900 leading-tight truncate">{tile.value}</p>
+              <p className="text-xs text-slate-400 leading-tight mt-0.5">{tile.label}</p>
             </div>
           </div>
         ))}

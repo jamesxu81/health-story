@@ -49,16 +49,16 @@ export function ActivityFeed({ events, hasMore }: ActivityFeedProps) {
   if (events.length === 0) {
     return (
       <section aria-label="Recent activity">
-        <h2 className="text-base font-semibold text-slate-800 mb-3">
+        <h2 className="text-lg font-semibold text-slate-900 mb-3">
           Recent activity
         </h2>
-        <div className="p-8 text-center bg-white rounded-2xl shadow-sm border border-slate-100">
+        <div className="p-8 text-center bg-white rounded-2xl shadow-card border border-slate-200/60">
           <p className="text-sm text-slate-400">
             All quiet lately — that&apos;s a good sign!
           </p>
           <Link
             href="/history"
-            className="text-xs text-indigo-500 hover:underline mt-2 inline-block font-medium"
+            className="text-sm text-indigo-600 hover:underline mt-3 inline-block font-medium"
           >
             View full timeline
           </Link>
@@ -69,10 +69,10 @@ export function ActivityFeed({ events, hasMore }: ActivityFeedProps) {
 
   return (
     <section aria-label="Recent activity">
-      <h2 className="text-base font-semibold text-slate-800 mb-3">
+      <h2 className="text-lg font-semibold text-slate-900 mb-3">
         Recent activity
       </h2>
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
+      <div className="bg-white rounded-2xl shadow-card overflow-hidden border border-slate-200/60">
         {events.map((event, idx) => {
           const config = EVENT_CONFIG[event.type];
           const isLast = idx === events.length - 1;
@@ -80,38 +80,33 @@ export function ActivityFeed({ events, hasMore }: ActivityFeedProps) {
             <Link
               key={`${event.type}-${event.illness_id}-${idx}`}
               href={`/history/${event.illness_id}`}
-              className={`flex items-stretch border-l-4 ${config.stripe} pl-3 pr-3 sm:pl-4 hover:bg-slate-50/90 transition-colors`}
+              className={`flex items-center gap-3 px-4 sm:px-5 py-3.5 hover:bg-slate-50 transition-colors ${
+                !isLast ? 'border-b border-slate-100' : ''
+              }`}
             >
-              <div className="flex items-start gap-3 py-3.5 flex-1 min-w-0">
-                <div className="flex flex-col items-center pt-1.5 shrink-0">
-                  <span className={`w-3 h-3 rounded-full ${config.dotColor} ring-2 ring-white shadow-sm`} />
-                  {!isLast && <span className="w-0.5 flex-1 min-h-[12px] bg-slate-200 mt-1 rounded-full" />}
-                </div>
+              <span className={`w-2.5 h-2.5 rounded-full ${config.dotColor} shrink-0`} />
 
-                <div className="flex-1 min-w-0 pt-0.5">
-                  <p className="text-sm text-slate-700 leading-snug">
-                    <span className="font-semibold text-slate-800">{config.verb}</span>{' '}
-                    {event.type === 'treatment_added'
-                      ? `"${event.title}" for ${event.illness_name}`
-                      : event.title}
-                  </p>
-                </div>
+              <p className="text-sm text-slate-700 leading-snug flex-1 min-w-0 truncate">
+                <span className="font-semibold text-slate-900">{config.verb}</span>{' '}
+                {event.type === 'treatment_added'
+                  ? `"${event.title}" for ${event.illness_name}`
+                  : event.title}
+              </p>
 
-                <time className="text-[11px] text-slate-400 whitespace-nowrap shrink-0 pt-1 font-medium">
-                  {relativeTime(event.timestamp)}
-                </time>
-              </div>
+              <time className="text-xs text-slate-400 whitespace-nowrap shrink-0 font-medium">
+                {relativeTime(event.timestamp)}
+              </time>
             </Link>
           );
         })}
       </div>
       {hasMore && (
-        <div className="text-center mt-3">
+        <div className="text-center mt-4">
           <Link
             href="/history"
-            className="text-xs text-indigo-500 hover:underline font-semibold"
+            className="text-sm text-indigo-600 hover:underline font-medium"
           >
-            View all in timeline →
+            View all in timeline &rarr;
           </Link>
         </div>
       )}
