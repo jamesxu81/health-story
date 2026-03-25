@@ -15,49 +15,59 @@ export function IllnessCard({ illness }: IllnessCardProps) {
     : `Started ${new Date(illness.date_started).toLocaleDateString()}`;
 
   const symptomCount = illness.symptoms?.length || 0;
+  const dateShort = new Date(illness.date_started).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   return (
     <Link href={`/history/${illness.id}`} className="block hover:no-underline group">
-      <article className="bg-white rounded-2xl shadow-card group-hover:shadow-card-hover transition-all border border-slate-200/60 p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-sm font-semibold text-slate-900 flex-1 leading-snug truncate">
+      <article className="flex items-center gap-3.5 py-3.5 px-4 bg-white rounded-xl border border-black/10 transition-all group-hover:border-vital-teal-mid group-hover:shadow-[0_0_0_3px_var(--color-vital-teal-light)]">
+        <div
+          className={`w-10 h-10 rounded-[10px] flex items-center justify-center text-lg shrink-0 ${
+            isActive ? 'bg-vital-coral-light' : 'bg-vital-green-light'
+          }`}
+          aria-hidden
+        >
+          {isActive ? '🤒' : '✓'}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-medium text-vital-ink leading-snug truncate">
             {illness.name}
           </h3>
-          <span className="flex items-center gap-1.5 shrink-0">
-            <span className={`w-2 h-2 rounded-full ${
-              isActive ? 'bg-red-400 animate-pulse' : 'bg-emerald-400'
-            }`} />
-            <span className={`text-xs font-medium ${
-              isActive ? 'text-red-600' : 'text-emerald-600'
-            }`}>
-              {isActive ? 'Active' : 'Resolved'}
-            </span>
+          <p className="text-[12px] text-vital-muted mt-0.5 line-clamp-3">
+            {illness.family_member_name && (
+              <span className="font-medium text-vital-ink">{illness.family_member_name} · </span>
+            )}
+            {dateRange}
+            {symptomCount > 0 && (
+              <span>{` · ${symptomCount} symptom${symptomCount !== 1 ? 's' : ''}`}</span>
+            )}
+            {illness.treatment_count > 0 && (
+              <span>{` · ${illness.treatment_count} treatment${illness.treatment_count !== 1 ? 's' : ''}`}</span>
+            )}
+            {illness.photo_count > 0 && (
+              <span>{` · ${illness.photo_count} photo${illness.photo_count !== 1 ? 's' : ''}`}</span>
+            )}
+            {illness.cause && (
+              <>
+                <br />
+                <span className="text-vital-muted-2">{`Maybe caused by: ${illness.cause}`}</span>
+              </>
+            )}
+          </p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-[12px] text-vital-muted">{dateShort}</p>
+          <span
+            className={`inline-flex mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+              isActive ? 'bg-vital-red-light text-vital-red' : 'bg-vital-green-light text-vital-green'
+            }`}
+          >
+            {isActive ? 'Active' : 'Resolved'}
           </span>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2 mb-2.5">
-          {illness.family_member_name && (
-            <span
-              className="inline-flex px-2 py-0.5 text-[11px] font-semibold rounded-full text-white"
-              style={{ backgroundColor: illness.family_member_color || '#64748b' }}
-            >
-              {illness.family_member_name}
-            </span>
-          )}
-          <p className="text-xs text-slate-400">{dateRange}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-          <span>{symptomCount} symptom{symptomCount !== 1 ? 's' : ''}</span>
-          <span>{illness.treatment_count} treatment{illness.treatment_count !== 1 ? 's' : ''}</span>
-          {illness.photo_count > 0 && (
-            <span>{illness.photo_count} photo{illness.photo_count !== 1 ? 's' : ''}</span>
-          )}
-        </div>
-
-        {illness.cause && (
-          <p className="text-xs text-slate-400 mt-2 truncate">Maybe caused by: {illness.cause}</p>
-        )}
       </article>
     </Link>
   );

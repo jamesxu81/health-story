@@ -64,7 +64,7 @@ export function FamilyMemberList() {
     return (
       <div className="space-y-3">
         {[1, 2].map((i) => (
-          <div key={i} className="h-20 bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
+          <div key={i} className="h-20 bg-white rounded-[14px] border border-black/10 animate-pulse" />
         ))}
       </div>
     );
@@ -72,8 +72,8 @@ export function FamilyMemberList() {
 
   if (error) {
     return (
-      <div className="p-5 bg-white rounded-2xl shadow-card border border-slate-200/60">
-        <p className="text-sm text-red-600">{error}</p>
+      <div className="p-5 bg-white rounded-[14px] border border-black/10">
+        <p className="text-sm text-vital-red">{error}</p>
       </div>
     );
   }
@@ -81,31 +81,29 @@ export function FamilyMemberList() {
   return (
     <div className="space-y-4">
       {members.length === 0 && !showForm && (
-        <div className="text-center py-12 px-6 bg-white rounded-2xl shadow-card border border-slate-200/60">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-violet-50 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7 text-violet-500">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+        <div className="text-center py-12 px-6 bg-white rounded-[14px] border border-black/10">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-vital-purple-light flex items-center justify-center text-2xl">
+            👨‍👩‍👧
           </div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-1">No family members yet</h2>
-          <p className="text-sm text-slate-400 mb-6 max-w-xs mx-auto">
+          <h2 className="font-display text-lg font-semibold text-vital-ink mb-1">No family members yet</h2>
+          <p className="text-sm text-vital-muted mb-6 max-w-xs mx-auto">
             Add your family members so you can track who&apos;s feeling under the weather.
           </p>
         </div>
       )}
 
       {members.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {members.map((m) => (
             <div
               key={m.id}
-              className="flex items-center gap-4 p-4 sm:p-5 bg-white rounded-2xl shadow-card border border-slate-200/60"
+              className="flex items-center gap-3.5 p-4 sm:p-5 bg-white rounded-[14px] border border-black/10"
             >
               <MemberAvatar name={m.name} color={m.color} size="lg" />
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-slate-900">{m.name}</p>
+                <p className="text-sm font-medium text-vital-ink">{m.name}</p>
                 {m.relationship && (
-                  <p className="text-xs text-slate-400 capitalize mt-0.5">{m.relationship}</p>
+                  <p className="text-[12px] text-vital-muted capitalize mt-0.5">{m.relationship}</p>
                 )}
               </div>
               <div className="flex gap-1">
@@ -114,13 +112,13 @@ export function FamilyMemberList() {
                     setEditing(m);
                     setShowForm(true);
                   }}
-                  className="px-3 py-2 text-xs font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors min-h-[44px]"
+                  className="px-3 py-2 text-[12px] font-medium text-vital-teal hover:bg-vital-teal-light rounded-lg transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(m.id)}
-                  className="px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors min-h-[44px]"
+                  className="px-3 py-2 text-[12px] font-medium text-vital-red hover:bg-vital-red-light rounded-lg transition-colors"
                 >
                   Remove
                 </button>
@@ -131,8 +129,8 @@ export function FamilyMemberList() {
       )}
 
       {showForm ? (
-        <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
-          <h3 className="text-base font-semibold text-slate-900 mb-4">
+        <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
+          <h3 className="font-display text-[15px] font-semibold text-vital-ink mb-4">
             {editing ? `Edit ${editing.name}` : 'Add a family member'}
           </h3>
           <MemberForm
@@ -147,7 +145,7 @@ export function FamilyMemberList() {
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full py-3.5 border-2 border-dashed border-slate-300 hover:border-indigo-400 text-slate-500 hover:text-indigo-600 font-medium rounded-2xl transition-colors min-h-[52px] text-sm"
+          className="w-full py-3.5 border-2 border-dashed border-black/15 hover:border-vital-teal text-vital-muted hover:text-vital-teal font-medium rounded-[14px] transition-colors h-14 text-[13px] bg-white"
         >
           + Add a family member
         </button>

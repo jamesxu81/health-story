@@ -82,17 +82,17 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
 
   if (error) {
     return (
-      <div className="p-5 bg-white rounded-2xl shadow-card border border-slate-200/60">
-        <p className="text-sm text-red-600">{error}</p>
+      <div className="p-5 bg-white rounded-[14px] border border-black/10">
+        <p className="text-sm text-vital-red">{error}</p>
       </div>
     );
   }
 
   if (loading && illnesses.length === 0 && !debouncedSearch) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-2">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-24 bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
+          <div key={i} className="h-[72px] bg-white rounded-xl border border-black/10 animate-pulse" />
         ))}
       </div>
     );
@@ -103,52 +103,50 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
 
   if (isEmpty && !hasSearch) {
     return (
-      <div className="p-10 text-center bg-white rounded-2xl shadow-card border border-slate-200/60">
-        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-slate-400">
+      <div className="p-10 text-center bg-white rounded-[14px] border border-black/10">
+        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-vital-canvas flex items-center justify-center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-vital-muted">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-slate-700">
+        <p className="text-sm font-medium text-vital-ink">
           {status === 'active'
             ? 'No active illnesses recorded.'
             : status === 'resolved'
               ? 'No resolved illnesses recorded.'
               : 'No illnesses recorded yet.'}
         </p>
-        <p className="text-xs text-slate-400 mt-1">Start by recording your first illness.</p>
+        <p className="text-[12px] text-vital-muted mt-1">Start by recording your first illness.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Search & sort controls */}
+    <div className="space-y-5">
       <div className="flex gap-2">
-        <div className="relative flex-1">
+        <div className="relative flex-1 flex items-center gap-3 bg-white border border-black/10 rounded-[10px] px-4 min-h-[44px] focus-within:ring-2 focus-within:ring-vital-teal/20 focus-within:border-vital-teal transition-shadow">
           <svg
             viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+            fill="currentColor"
+            className="w-4 h-4 text-vital-muted shrink-0 pointer-events-none"
+            aria-hidden
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
           </svg>
           <input
             type="text"
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Search by name or cause..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors min-h-[44px]"
+            placeholder="Search records, conditions..."
+            className="flex-1 min-w-0 py-2.5 bg-transparent border-0 text-sm text-vital-ink placeholder:text-vital-muted-2 outline-none focus:ring-0"
           />
           {search && (
             <button
               onClick={() => { setSearch(''); setDebouncedSearch(''); setPage(0); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-black/10 hover:bg-black/15 flex items-center justify-center transition-colors"
               aria-label="Clear search"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3 text-slate-500">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3 text-vital-muted">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -156,7 +154,7 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
         </div>
         <button
           onClick={() => { setSortOrder((prev) => prev === 'desc' ? 'asc' : 'desc'); setPage(0); }}
-          className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors min-h-[44px]"
+          className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-black/10 rounded-[10px] text-[13px] font-medium text-vital-ink hover:bg-vital-canvas transition-colors h-11"
           title={sortOrder === 'desc' ? 'Showing newest first' : 'Showing oldest first'}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
@@ -171,41 +169,41 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
       </div>
 
       {isEmpty && hasSearch ? (
-        <div className="p-10 text-center bg-white rounded-2xl shadow-card border border-slate-200/60">
-          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-slate-400">
+        <div className="p-10 text-center bg-white rounded-[14px] border border-black/10">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-vital-canvas flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-vital-muted">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-slate-700">
+          <p className="text-sm font-medium text-vital-ink">
             No results for &ldquo;{debouncedSearch}&rdquo;
           </p>
-          <p className="text-xs text-slate-400 mt-1">Try a different search term.</p>
+          <p className="text-[12px] text-vital-muted mt-1">Try a different search term.</p>
         </div>
       ) : (
         <>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {illnesses.map((illness) => (
               <IllnessCard key={illness.id} illness={illness} />
             ))}
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => setPage(Math.max(0, page - 1))}
                 disabled={page === 0 || loading}
-                className="px-4 py-2.5 bg-white rounded-xl shadow-card border border-slate-200/60 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors"
+                className="px-4 py-2 bg-white rounded-full border border-black/10 text-[13px] font-medium text-vital-muted hover:bg-vital-canvas disabled:opacity-40 disabled:cursor-not-allowed h-9 transition-colors"
               >
                 &larr; Previous
               </button>
-              <span className="text-sm text-slate-500 font-medium min-w-[60px] text-center">
+              <span className="text-sm text-vital-ink font-semibold min-w-[72px] text-center font-display">
                 {page + 1} / {totalPages}
               </span>
               <button
                 onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
                 disabled={page >= totalPages - 1 || loading}
-                className="px-4 py-2.5 bg-white rounded-xl shadow-card border border-slate-200/60 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors"
+                className="px-4 py-2 bg-white rounded-full border border-black/10 text-[13px] font-medium text-vital-muted hover:bg-vital-canvas disabled:opacity-40 disabled:cursor-not-allowed h-9 transition-colors"
               >
                 Next &rarr;
               </button>
@@ -213,7 +211,7 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
           )}
 
           {loading && illnesses.length > 0 && (
-            <div className="text-center text-xs text-slate-400">Loading...</div>
+            <div className="text-center text-[12px] text-vital-muted">Loading...</div>
           )}
         </>
       )}

@@ -7,11 +7,13 @@ export const metadata = {
 
 export default function HistoryPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Timeline</h1>
-      <p className="text-sm text-slate-500 mt-1 mb-6 sm:mb-8">
-        Your family&apos;s health history at a glance.
-      </p>
+    <div className="max-w-3xl mx-auto w-full">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-display text-2xl font-bold text-vital-ink">Timeline</h1>
+        <p className="text-sm text-vital-muted mt-1">
+          Your family&apos;s health history at a glance.
+        </p>
+      </div>
       <TimelineListClient />
     </div>
   );

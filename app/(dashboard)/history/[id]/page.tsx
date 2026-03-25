@@ -42,8 +42,8 @@ export default function HistoryDetailPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-600 border-t-transparent mx-auto mb-3" />
-          <p className="text-sm text-slate-400">Loading...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-vital-teal border-t-transparent mx-auto mb-3" />
+          <p className="text-sm text-vital-muted">Loading...</p>
         </div>
       </div>
     );
@@ -51,28 +51,28 @@ export default function HistoryDetailPage() {
 
   if (error || !illness) {
     return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-2xl mx-auto w-full">
         <button
           onClick={() => router.back()}
-          className="mb-4 text-sm font-medium text-slate-600 hover:text-slate-900 min-h-[44px] inline-flex items-center gap-1.5 px-3 -ml-3 rounded-lg hover:bg-slate-100 transition-colors"
+          className="mb-4 text-sm font-medium text-vital-muted hover:text-vital-ink inline-flex items-center gap-1.5 px-3 py-2 -ml-3 rounded-lg hover:bg-white border border-transparent hover:border-black/10 transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
           Back
         </button>
-        <div className="p-5 bg-white rounded-2xl shadow-card border border-slate-200/60">
-          <p className="text-sm text-red-600">{error || 'Illness not found'}</p>
+        <div className="p-5 bg-white rounded-[14px] border border-black/10">
+          <p className="text-sm text-vital-red">{error || 'Illness not found'}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div className="max-w-2xl mx-auto w-full">
       <button
         onClick={() => isEditing ? setIsEditing(false) : router.back()}
-        className="mb-5 text-sm font-medium text-slate-600 hover:text-slate-900 min-h-[44px] inline-flex items-center gap-1.5 px-3 -ml-3 rounded-lg hover:bg-slate-100 transition-colors"
+        className="mb-5 text-sm font-medium text-vital-muted hover:text-vital-ink inline-flex items-center gap-1.5 px-3 py-2 -ml-3 rounded-lg hover:bg-white border border-transparent hover:border-black/10 transition-colors"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -82,8 +82,10 @@ export default function HistoryDetailPage() {
 
       {isEditing ? (
         <>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Edit record</h1>
-          <p className="text-sm text-slate-500 mt-1 mb-6 sm:mb-8">Update the details of this illness record.</p>
+          <div className="mb-6 sm:mb-8">
+            <h1 className="font-display text-2xl font-bold text-vital-ink">Edit record</h1>
+            <p className="text-sm text-vital-muted mt-1">Update the details of this illness record.</p>
+          </div>
           <IllnessForm
             initialData={illness}
             onCancel={() => setIsEditing(false)}

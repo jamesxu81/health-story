@@ -29,18 +29,18 @@ function relativeTime(iso: string): string {
 
 const EVENT_CONFIG = {
   illness_created: {
-    dotColor: 'bg-rose-500',
-    stripe: 'border-l-rose-400',
+    dotClass: 'bg-vital-coral-light',
+    emoji: '🤒',
     verb: 'Logged',
   },
   illness_resolved: {
-    dotColor: 'bg-emerald-500',
-    stripe: 'border-l-emerald-400',
+    dotClass: 'bg-vital-green-light',
+    emoji: '✓',
     verb: 'Resolved',
   },
   treatment_added: {
-    dotColor: 'bg-violet-500',
-    stripe: 'border-l-violet-400',
+    dotClass: 'bg-vital-purple-light',
+    emoji: '💊',
     verb: 'Treated',
   },
 } as const;
@@ -49,19 +49,21 @@ export function ActivityFeed({ events, hasMore }: ActivityFeedProps) {
   if (events.length === 0) {
     return (
       <section aria-label="Recent activity">
-        <h2 className="text-lg font-semibold text-slate-900 mb-3">
-          Recent activity
-        </h2>
-        <div className="p-8 text-center bg-white rounded-2xl shadow-card border border-slate-200/60">
-          <p className="text-sm text-slate-400">
-            All quiet lately — that&apos;s a good sign!
-          </p>
-          <Link
-            href="/history"
-            className="text-sm text-indigo-600 hover:underline mt-3 inline-block font-medium"
-          >
-            View full timeline
-          </Link>
+        <div className="bg-white rounded-[14px] border border-black/10 p-5">
+          <h2 className="font-display text-[15px] font-semibold text-vital-ink mb-4">
+            Health Timeline
+          </h2>
+          <div className="py-6 text-center">
+            <p className="text-sm text-vital-muted">
+              All quiet lately — that&apos;s a good sign!
+            </p>
+            <Link
+              href="/history"
+              className="text-[12px] text-vital-teal hover:underline mt-2 inline-block font-medium"
+            >
+              View full timeline
+            </Link>
+          </div>
         </div>
       </section>
     );
@@ -69,47 +71,58 @@ export function ActivityFeed({ events, hasMore }: ActivityFeedProps) {
 
   return (
     <section aria-label="Recent activity">
-      <h2 className="text-lg font-semibold text-slate-900 mb-3">
-        Recent activity
-      </h2>
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden border border-slate-200/60">
-        {events.map((event, idx) => {
-          const config = EVENT_CONFIG[event.type];
-          const isLast = idx === events.length - 1;
-          return (
+      <div className="bg-white rounded-[14px] border border-black/10 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-[15px] font-semibold text-vital-ink">
+            Health Timeline
+          </h2>
+          {hasMore && (
             <Link
-              key={`${event.type}-${event.illness_id}-${idx}`}
-              href={`/history/${event.illness_id}`}
-              className={`flex items-center gap-3 px-4 sm:px-5 py-3.5 hover:bg-slate-50 transition-colors ${
-                !isLast ? 'border-b border-slate-100' : ''
-              }`}
+              href="/history"
+              className="text-[12px] font-medium text-vital-teal hover:underline"
             >
-              <span className={`w-2.5 h-2.5 rounded-full ${config.dotColor} shrink-0`} />
-
-              <p className="text-sm text-slate-700 leading-snug flex-1 min-w-0 truncate">
-                <span className="font-semibold text-slate-900">{config.verb}</span>{' '}
-                {event.type === 'treatment_added'
-                  ? `"${event.title}" for ${event.illness_name}`
-                  : event.title}
-              </p>
-
-              <time className="text-xs text-slate-400 whitespace-nowrap shrink-0 font-medium">
-                {relativeTime(event.timestamp)}
-              </time>
+              View all &rarr;
             </Link>
-          );
-        })}
-      </div>
-      {hasMore && (
-        <div className="text-center mt-4">
-          <Link
-            href="/history"
-            className="text-sm text-indigo-600 hover:underline font-medium"
-          >
-            View all in timeline &rarr;
-          </Link>
+          )}
         </div>
-      )}
+        <div>
+          {events.map((event, idx) => {
+            const config = EVENT_CONFIG[event.type];
+            const isLast = idx === events.length - 1;
+            return (
+              <Link
+                key={`${event.type}-${event.illness_id}-${idx}`}
+                href={`/history/${event.illness_id}`}
+                className={`flex gap-3.5 pb-5 relative group ${isLast ? 'pb-0' : ''}`}
+              >
+                {!isLast && (
+                  <span
+                    className="absolute left-[15px] top-[30px] bottom-0 w-px bg-black/10 pointer-events-none"
+                    aria-hidden
+                  />
+                )}
+                <span
+                  className={`relative z-[1] w-[30px] h-[30px] rounded-full flex items-center justify-center shrink-0 border-2 border-white text-[13px] ${config.dotClass}`}
+                  aria-hidden
+                >
+                  {config.emoji}
+                </span>
+                <div className="flex-1 min-w-0 pt-1">
+                  <p className="text-sm font-medium text-vital-ink leading-snug truncate group-hover:text-vital-teal transition-colors">
+                    <span className="font-semibold">{config.verb}</span>{' '}
+                    {event.type === 'treatment_added'
+                      ? `"${event.title}" for ${event.illness_name}`
+                      : event.title}
+                  </p>
+                  <time className="text-[12px] text-vital-muted mt-0.5 block">
+                    {relativeTime(event.timestamp)}
+                  </time>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }

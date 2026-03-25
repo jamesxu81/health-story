@@ -29,7 +29,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const inputClasses =
-    'w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white transition-colors';
+    'w-full px-4 py-3 border border-black/10 rounded-[10px] text-sm focus:ring-2 focus:ring-vital-teal/20 focus:border-vital-teal bg-white text-vital-ink transition-colors';
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -81,13 +81,13 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-4 bg-red-50 rounded-2xl">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="p-4 bg-vital-red-light rounded-[14px] border border-vital-red/20">
+          <p className="text-sm text-vital-red">{error}</p>
         </div>
       )}
 
       <div>
-        <label htmlFor="member-name" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+        <label htmlFor="member-name" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
           Name *
         </label>
         <input
@@ -102,15 +102,15 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Color</label>
+        <label className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-2">Color</label>
         <div className="flex gap-2.5 flex-wrap">
           {PRESET_COLORS.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setColor(c)}
-              className={`w-10 h-10 rounded-full border-2 transition-all min-w-[44px] min-h-[44px] ${
-                color === c ? 'border-slate-800 scale-110' : 'border-transparent hover:scale-105'
+              className={`w-10 h-10 rounded-full border-2 transition-all ${
+                color === c ? 'border-vital-ink scale-110' : 'border-transparent hover:scale-105'
               }`}
               style={{ backgroundColor: c }}
               aria-label={`Color ${c}`}
@@ -120,7 +120,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       </div>
 
       <div>
-        <label htmlFor="member-relationship" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+        <label htmlFor="member-relationship" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
           Relationship
         </label>
         <select
@@ -140,7 +140,7 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
       </div>
 
       <div>
-        <label htmlFor="member-dob" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+        <label htmlFor="member-dob" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
           Date of birth (optional)
         </label>
         <input
@@ -152,18 +152,18 @@ export function MemberForm({ member, onSave, onCancel }: MemberFormProps) {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row-reverse gap-3 pt-2">
+      <div className="grid grid-cols-[1fr_auto] gap-3 pt-2">
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-xl transition-colors min-h-[44px]"
+          className="py-3 bg-vital-teal hover:bg-vital-teal-hover disabled:bg-black/10 disabled:text-vital-muted-2 text-white text-[13px] font-medium rounded-lg transition-colors h-12 min-w-0"
         >
           {loading ? 'Saving...' : member ? 'Update' : 'Add member'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 sm:flex-initial px-5 py-3 border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors min-h-[44px]"
+          className="px-6 py-3 border border-black/10 text-vital-ink text-[13px] font-medium rounded-lg bg-white hover:bg-vital-canvas transition-colors h-12"
         >
           Cancel
         </button>

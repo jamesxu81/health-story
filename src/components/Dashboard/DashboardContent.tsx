@@ -56,25 +56,25 @@ export function DashboardContent() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-[120px] bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
+            <div key={i} className="h-[100px] bg-white rounded-[14px] border border-black/10 animate-pulse" />
           ))}
         </div>
-        <div className="h-40 bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
-        <div className="h-64 bg-white rounded-2xl shadow-card border border-slate-200/60 animate-pulse" />
+        <div className="h-40 bg-white rounded-[14px] border border-black/10 animate-pulse" />
+        <div className="h-64 bg-white rounded-[14px] border border-black/10 animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-white rounded-2xl shadow-card border border-slate-200/60 text-center">
-        <p className="text-red-600 font-medium text-sm mb-3">{error}</p>
+      <div className="p-6 bg-white rounded-[14px] border border-black/10 text-center">
+        <p className="text-vital-red font-medium text-sm mb-3">{error}</p>
         <button
           type="button"
           onClick={() => load()}
-          className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors text-sm font-medium min-h-[44px]"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white text-vital-ink rounded-lg hover:bg-vital-canvas transition-colors text-[13px] font-medium h-10 border border-black/10"
         >
           Retry
         </button>
@@ -94,9 +94,11 @@ export function DashboardContent() {
         <EmptyState />
       ) : (
         <>
-          <ActiveIllnessCards illnesses={data.active_illnesses} />
           <StatsSnapshot stats={data.stats} />
-          <ActivityFeed events={data.recent_activity} hasMore={hasMoreActivity} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ActiveIllnessCards illnesses={data.active_illnesses} />
+            <ActivityFeed events={data.recent_activity} hasMore={hasMoreActivity} />
+          </div>
         </>
       )}
     </div>

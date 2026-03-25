@@ -36,18 +36,18 @@ export function MemberPicker({ value, onChange }: MemberPickerProps) {
   if (loading || members.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
-      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+    <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
+      <label className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-3">
         Who is this for?
       </label>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => onChange(null)}
-          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full border-2 text-xs font-semibold transition-all min-h-[44px] ${
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 text-[12px] font-semibold transition-all h-9 ${
             value === null
-              ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-              : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-600'
+              ? 'border-vital-teal bg-vital-teal-light text-vital-teal'
+              : 'border-black/10 bg-white text-vital-muted hover:border-black/20 hover:text-vital-ink'
           }`}
         >
           Everyone
@@ -57,10 +57,10 @@ export function MemberPicker({ value, onChange }: MemberPickerProps) {
             key={m.id}
             type="button"
             onClick={() => onChange(m.id)}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full border-2 text-xs font-semibold transition-all min-h-[44px] ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 text-[12px] font-semibold transition-all h-9 ${
               value === m.id
-                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-600'
+                ? 'border-vital-teal bg-vital-teal-light text-vital-teal'
+                : 'border-black/10 bg-white text-vital-muted hover:border-black/20 hover:text-vital-ink'
             }`}
           >
             <MemberAvatar name={m.name} color={m.color} size="sm" />

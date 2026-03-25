@@ -23,76 +23,71 @@ export function ActiveIllnessCards({ illnesses }: ActiveIllnessCardsProps) {
 
   return (
     <section aria-label="Active sick days">
-      <h2 className="text-lg font-semibold text-slate-900 mb-3">
-        {illnesses.length} active sick day
-        {illnesses.length !== 1 ? 's' : ''}
-      </h2>
+      <div className="bg-white rounded-[14px] border border-black/10 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-[15px] font-semibold text-vital-ink">
+            {illnesses.length} active sick day
+            {illnesses.length !== 1 ? 's' : ''}
+          </h2>
+          <Link href="/history?status=active" className="text-[12px] font-medium text-vital-teal hover:underline">
+            View all &rarr;
+          </Link>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {shown.map((illness) => {
-          const days = daysElapsed(illness.date_started);
-          const symptomCount = illness.symptoms?.length ?? 0;
-          const isLingering = days > 7;
+        <div className="space-y-3">
+          {shown.map((illness) => {
+            const days = daysElapsed(illness.date_started);
+            const symptomCount = illness.symptoms?.length ?? 0;
+            const isLingering = days > 7;
 
-          return (
-            <Link
-              key={illness.id}
-              href={`/history/${illness.id}`}
-              className="block hover:no-underline group"
-            >
-              <article className="bg-white rounded-2xl shadow-card group-hover:shadow-card-hover transition-all overflow-hidden border border-slate-200/60 p-4 sm:p-5">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-sm font-semibold text-slate-900 flex-1 truncate">
+            return (
+              <Link
+                key={illness.id}
+                href={`/history/${illness.id}`}
+                className="flex items-center gap-3.5 p-3 rounded-xl border border-black/10 hover:border-vital-teal-mid hover:shadow-[0_0_0_3px_var(--color-vital-teal-light)] transition-all group"
+              >
+                <div
+                  className={`w-10 h-10 rounded-[10px] flex items-center justify-center text-lg shrink-0 ${
+                    isLingering ? 'bg-vital-red-light' : 'bg-vital-amber-light'
+                  }`}
+                  aria-hidden
+                >
+                  🤒
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-vital-ink truncate group-hover:text-vital-teal transition-colors">
                     {illness.name}
-                  </h3>
-                  <span className={`px-2.5 py-1 text-[11px] font-semibold rounded-full whitespace-nowrap ${
+                  </p>
+                  <p className="text-[12px] text-vital-muted mt-0.5">
+                    {illness.family_member_name && (
+                      <span className="font-medium text-vital-ink">{illness.family_member_name} · </span>
+                    )}
+                    {symptomCount} symptom{symptomCount !== 1 ? 's' : ''} · {illness.treatment_count} treatment{illness.treatment_count !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${
                     isLingering
-                      ? 'bg-red-50 text-red-600'
-                      : 'bg-amber-50 text-amber-600'
+                      ? 'bg-vital-red-light text-vital-red'
+                      : 'bg-vital-amber-light text-vital-amber'
                   }`}>
                     Day {days + 1}
                   </span>
                 </div>
+              </Link>
+            );
+          })}
+        </div>
 
-                <div className="flex items-center gap-2 mb-2.5">
-                  {illness.family_member_name && (
-                    <span
-                      className="inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full text-white"
-                      style={{ backgroundColor: illness.family_member_color || '#64748b' }}
-                    >
-                      {illness.family_member_name}
-                    </span>
-                  )}
-                  <span className="text-xs text-slate-400">
-                    Started{' '}
-                    {new Date(illness.date_started).toLocaleDateString()}
-                  </span>
-                </div>
-
-                <div className="flex gap-3 text-xs text-slate-500">
-                  <span>{symptomCount} symptom{symptomCount !== 1 ? 's' : ''}</span>
-                  <span>{illness.treatment_count} treatment{illness.treatment_count !== 1 ? 's' : ''}</span>
-                </div>
-
-                {isLingering && (
-                  <p className="mt-2.5 text-xs text-amber-600 font-medium">
-                    Still going? You can mark it resolved
-                  </p>
-                )}
-              </article>
+        {overflow > 0 && (
+          <p className="text-xs text-vital-muted mt-3 text-center">
+            and {overflow} more&hellip;{' '}
+            <Link href="/history" className="text-vital-teal font-medium hover:underline">
+              View all
             </Link>
-          );
-        })}
+          </p>
+        )}
       </div>
-
-      {overflow > 0 && (
-        <p className="text-xs text-slate-400 mt-4 text-center">
-          and {overflow} more&hellip;{' '}
-          <Link href="/history?status=active" className="text-indigo-600 font-medium hover:underline">
-            View all
-          </Link>
-        </p>
-      )}
     </section>
   );
 }

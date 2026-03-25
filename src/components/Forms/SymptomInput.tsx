@@ -9,19 +9,19 @@ interface SymptomInputProps {
 }
 
 const SEVERITY_OPTIONS = [
-  { value: 'mild', label: 'Mild', activeBg: 'bg-green-50 text-green-700 border-green-300', emoji: '😐' },
-  { value: 'moderate', label: 'Moderate', activeBg: 'bg-amber-50 text-amber-700 border-amber-300', emoji: '😷' },
-  { value: 'severe', label: 'Severe', activeBg: 'bg-red-50 text-red-700 border-red-300', emoji: '🤒' },
+  { value: 'mild', label: 'Mild', activeBg: 'bg-vital-green-light text-vital-green border-vital-green', emoji: '😐' },
+  { value: 'moderate', label: 'Moderate', activeBg: 'bg-vital-amber-light text-vital-amber border-vital-amber', emoji: '😷' },
+  { value: 'severe', label: 'Severe', activeBg: 'bg-vital-red-light text-vital-red border-vital-red', emoji: '🤒' },
 ] as const;
 
 const CHIP_COLORS: Record<string, string> = {
-  mild: 'bg-green-50 text-green-700 border-green-200',
-  moderate: 'bg-amber-50 text-amber-700 border-amber-200',
-  severe: 'bg-red-50 text-red-700 border-red-200',
+  mild: 'bg-vital-green-light text-vital-green border-vital-green/20',
+  moderate: 'bg-vital-amber-light text-vital-amber border-vital-amber/20',
+  severe: 'bg-vital-red-light text-vital-red border-vital-red/20',
 };
 
 const inputClasses =
-  'w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors';
+  'w-full px-4 py-3 bg-white border border-black/10 rounded-[10px] text-sm text-vital-ink placeholder:text-vital-muted-2 focus:ring-2 focus:ring-vital-teal/20 focus:border-vital-teal transition-colors';
 
 export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
   const [nameInput, setNameInput] = useState('');
@@ -60,9 +60,8 @@ export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
 
   return (
     <div className="space-y-4">
-      {/* Add symptom card */}
-      <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
-        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
+      <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
+        <label className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-4">
           Add Symptoms
         </label>
 
@@ -78,7 +77,7 @@ export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
           />
 
           <div>
-            <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            <span className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-2">
               Severity
             </span>
             <div className="grid grid-cols-3 gap-2">
@@ -89,10 +88,10 @@ export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
                     key={opt.value}
                     type="button"
                     onClick={() => setSeverityInput(opt.value)}
-                    className={`flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold rounded-xl border-2 transition-all min-h-[44px] ${
+                    className={`flex items-center justify-center gap-1.5 py-2 text-[12px] font-semibold rounded-[10px] border-2 transition-all h-10 ${
                       isActive
                         ? opt.activeBg + ' shadow-sm'
-                        : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300 hover:text-slate-500'
+                        : 'bg-white text-vital-muted-2 border-black/10 hover:border-black/20 hover:text-vital-muted'
                     }`}
                   >
                     <span className="text-base">{opt.emoji}</span>
@@ -118,24 +117,23 @@ export function SymptomInput({ symptoms, onChange }: SymptomInputProps) {
             type="button"
             onClick={handleAddSymptom}
             disabled={!nameInput.trim()}
-            className="w-full py-3 bg-slate-900 hover:bg-slate-800 active:bg-slate-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-sm font-semibold rounded-xl transition-colors min-h-[44px]"
+            className="w-full py-3 bg-vital-teal hover:bg-vital-teal-hover active:opacity-95 disabled:bg-black/10 disabled:text-vital-muted-2 text-white text-[13px] font-medium rounded-lg transition-colors h-12"
           >
             Add Symptom
           </button>
         </div>
       </div>
 
-      {/* Symptom chips */}
       {symptoms.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
-          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+        <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
+          <label className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-3">
             Added Symptoms ({symptoms.length})
           </label>
           <div className="flex flex-wrap gap-2">
             {symptoms.map((symptom, index) => (
               <span
                 key={index}
-                className={`inline-flex items-center gap-1.5 pl-3 pr-1.5 py-2 rounded-full text-xs font-medium border ${CHIP_COLORS[symptom.severity] || CHIP_COLORS.mild}`}
+                className={`inline-flex items-center gap-1.5 pl-3 pr-1.5 py-2 rounded-full text-[12px] font-medium border ${CHIP_COLORS[symptom.severity] || CHIP_COLORS.mild}`}
               >
                 {symptom.name}
                 {symptom.duration && (

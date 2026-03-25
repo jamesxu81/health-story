@@ -22,7 +22,7 @@ interface IllnessFormProps {
 }
 
 const inputClasses =
-  'w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors';
+  'w-full px-4 py-3 bg-white border border-black/10 rounded-[10px] text-sm text-vital-ink placeholder:text-vital-muted-2 focus:ring-2 focus:ring-vital-teal/20 focus:border-vital-teal transition-colors';
 
 function toDateString(d: Date | string | null | undefined): string {
   if (!d) return '';
@@ -113,24 +113,22 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl">
-          <p className="text-sm font-medium text-red-700">{error}</p>
+        <div className="p-4 bg-vital-red-light border border-vital-red/20 rounded-[14px]">
+          <p className="text-sm font-medium text-vital-red">{error}</p>
         </div>
       )}
 
-      {/* Member picker */}
       <MemberPicker
         value={formData.family_member_id}
         onChange={(id) => setFormData((prev) => ({ ...prev, family_member_id: id }))}
       />
 
-      {/* Illness name + dates */}
-      <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
+      <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
         <div className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+            <label htmlFor="name" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
               Illness Name *
             </label>
             <input
@@ -147,7 +145,7 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="date_started" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+              <label htmlFor="date_started" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
                 Date Started *
               </label>
               <input
@@ -160,7 +158,7 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
               />
             </div>
             <div>
-              <label htmlFor="date_ended" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+              <label htmlFor="date_ended" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
                 Date Ended
               </label>
               <input
@@ -176,14 +174,12 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
         </div>
       </div>
 
-      {/* Symptoms */}
       <SymptomInput symptoms={formData.symptoms} onChange={handleSymptomsChange} />
 
-      {/* Cause & notes */}
-      <div className="bg-white rounded-2xl shadow-card border border-slate-200/60 p-4 sm:p-6">
+      <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
         <div className="space-y-4">
           <div>
-            <label htmlFor="cause" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+            <label htmlFor="cause" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
               What might have caused it?
             </label>
             <input
@@ -199,7 +195,7 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
           </div>
 
           <div>
-            <label htmlFor="notes" className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+            <label htmlFor="notes" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
               Notes for your future self
             </label>
             <textarea
@@ -216,19 +212,18 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="pt-2 pb-4 flex flex-col sm:flex-row-reverse gap-3">
+      <div className="pt-3 pb-4 grid grid-cols-[1fr_auto] gap-3">
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-semibold rounded-xl transition-colors min-h-[48px] shadow-sm"
+          className="py-3 bg-vital-teal hover:bg-vital-teal-hover active:opacity-95 disabled:bg-black/10 disabled:text-vital-muted-2 text-white text-[13px] font-medium rounded-lg transition-colors h-12 min-w-0"
         >
           {loading ? 'Saving...' : isEditing ? 'Update record' : 'Save to timeline'}
         </button>
         <button
           type="button"
           onClick={() => onCancel ? onCancel() : router.back()}
-          className="flex-1 py-3 text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors min-h-[48px]"
+          className="px-6 py-3 text-[13px] font-medium text-vital-ink border border-black/10 rounded-lg bg-white hover:bg-vital-canvas transition-colors h-12"
         >
           Cancel
         </button>

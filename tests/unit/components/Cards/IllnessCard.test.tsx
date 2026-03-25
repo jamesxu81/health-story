@@ -51,7 +51,7 @@ describe('IllnessCard Component', () => {
   it('displays symptom count correctly', () => {
     render(<IllnessCard illness={mockIllness} />);
 
-    expect(screen.getByText('2 symptoms')).toBeInTheDocument();
+    expect(screen.getByText(/2 symptoms/)).toBeInTheDocument();
   });
 
   it('displays singular symptom label when count is 1', () => {
@@ -61,19 +61,19 @@ describe('IllnessCard Component', () => {
     };
     render(<IllnessCard illness={oneSymptomIllness} />);
 
-    expect(screen.getByText('1 symptom')).toBeInTheDocument();
+    expect(screen.getByText(/1 symptom/)).toBeInTheDocument();
   });
 
   it('displays treatment count correctly', () => {
     render(<IllnessCard illness={mockIllness} />);
 
-    expect(screen.getByText('2 treatments')).toBeInTheDocument();
+    expect(screen.getByText(/2 treatments/)).toBeInTheDocument();
   });
 
   it('displays photo count when present', () => {
     render(<IllnessCard illness={mockIllness} />);
 
-    expect(screen.getByText('1 photo')).toBeInTheDocument();
+    expect(screen.getByText(/1 photo/)).toBeInTheDocument();
   });
 
   it('does not display photo count when zero', () => {

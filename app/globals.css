@@ -1,41 +1,85 @@
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@theme {
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+
+  --color-primary: #0f172a;
+  --color-secondary: #64748b;
+  --color-accent: #06b6d4;
+
+  --color-vital-teal: #1D9E75;
+  --color-vital-teal-hover: #0F6E56;
+  --color-vital-teal-light: #E1F5EE;
+  --color-vital-teal-mid: #5DCAA5;
+  --color-vital-coral: #D85A30;
+  --color-vital-coral-light: #FAECE7;
+  --color-vital-purple: #7F77DD;
+  --color-vital-purple-light: #EEEDFE;
+  --color-vital-amber: #BA7517;
+  --color-vital-amber-light: #FAEEDA;
+  --color-vital-blue: #378ADD;
+  --color-vital-blue-light: #E6F1FB;
+  --color-vital-red: #E24B4A;
+  --color-vital-red-light: #FCEBEB;
+  --color-vital-green: #639922;
+  --color-vital-green-light: #EAF3DE;
+  --color-vital-canvas: #F8F7F4;
+  --color-vital-ink: #2C2C2A;
+  --color-vital-muted: #888780;
+  --color-vital-muted-2: #B4B2A9;
+
+  --breakpoint-xs: 320px;
+
+  --spacing-safe: env(safe-area-inset-bottom);
+
+  --max-width-app: 90rem;
+
+  --min-height-touch-target: 44px;
+  --min-width-touch-target: 44px;
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
 }
 
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: transparent;
-  scroll-behavior: smooth;
-}
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  line-height: 1.6;
-  letter-spacing: -0.011em;
-}
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
 
-@supports (padding: max(0px)) {
   body {
-    padding-left: max(0px, env(safe-area-inset-left));
-    padding-right: max(0px, env(safe-area-inset-right));
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+  }
+
+  @supports (padding: max(0px)) {
+    body {
+      padding-left: max(0px, env(safe-area-inset-left));
+      padding-right: max(0px, env(safe-area-inset-right));
+    }
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 
-button,
-a[role='button'],
-input[type='checkbox'],
-input[type='radio'] {
-  min-height: 44px;
-  min-width: 44px;
-}
-
 :focus-visible {
-  outline: 2px solid #818cf8;
+  outline: 2px solid #1d9e75;
   outline-offset: 2px;
   border-radius: 8px;
+}
+
+::selection {
+  background: rgba(29, 158, 117, 0.15);
 }

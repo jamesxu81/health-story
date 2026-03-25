@@ -7,7 +7,8 @@ const config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['var(--font-dm-sans)', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
         app: '90rem',
@@ -16,6 +17,29 @@ const config = {
         primary: '#0f172a',
         secondary: '#64748b',
         accent: '#06b6d4',
+        /** VitalCare-style palette (healthcare_records_app.html) */
+        vital: {
+          teal: '#1D9E75',
+          'teal-hover': '#0F6E56',
+          'teal-light': '#E1F5EE',
+          'teal-mid': '#5DCAA5',
+          coral: '#D85A30',
+          'coral-light': '#FAECE7',
+          purple: '#7F77DD',
+          'purple-light': '#EEEDFE',
+          amber: '#BA7517',
+          'amber-light': '#FAEEDA',
+          blue: '#378ADD',
+          'blue-light': '#E6F1FB',
+          red: '#E24B4A',
+          'red-light': '#FCEBEB',
+          green: '#639922',
+          'green-light': '#EAF3DE',
+          canvas: '#F8F7F4',
+          ink: '#2C2C2A',
+          muted: '#888780',
+          'muted-2': '#B4B2A9',
+        },
       },
       screens: {
         xs: '320px',
