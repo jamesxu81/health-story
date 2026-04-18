@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { IllnessCard } from '@/components/Cards/IllnessCard';
 import { IllnessWithCounts } from '@/types/illness';
 
@@ -103,5 +104,45 @@ describe('IllnessCard Component', () => {
 
     const start = new Date(activeIllness.date_started).toLocaleDateString();
     expect(screen.getByText(new RegExp(`Started\\s+${start}`))).toBeInTheDocument();
+  });
+
+  it('shows timeline remove control when onRecordDeleted is set', () => {
+    render(<IllnessCard illness={mockIllness} onRecordDeleted={jest.fn()} />);
+
+    expect(
+      screen.getByRole('button', { name: /remove common cold from timeline/i })
+    ).toBeInTheDocument();
+  });
+
+  it('hides timeline remove control when onRecordDeleted is omitted', () => {
+    render(<IllnessCard illness={mockIllness} />);
+
+    expect(
+      screen.queryByRole('button', { name: /remove common cold from timeline/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it('DELETE succeeds and calls onRecordDeleted after inline confirm', async () => {
+    const user = userEvent.setup();
+    const onDeleted = jest.fn();
+    const fetchMock = jest.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    global.fetch = fetchMock as unknown as typeof fetch;
+    localStorage.setItem('auth_token', 'tok-99');
+
+    render(<IllnessCard illness={mockIllness} onRecordDeleted={onDeleted} />);
+
+    await user.click(
+      screen.getByRole('button', { name: /remove common cold from timeline/i })
+    );
+    await user.click(screen.getByRole('button', { name: /^remove$/i }));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/illnesses/ill-123',
+      expect.objectContaining({
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer tok-99' },
+      })
+    );
+    expect(onDeleted).toHaveBeenCalledTimes(1);
   });
 });

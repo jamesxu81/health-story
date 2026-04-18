@@ -43,42 +43,42 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
   const offset = page * LIMIT;
   const totalPages = Math.ceil(total / LIMIT);
 
+  const loadIllnesses = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({
+        limit: LIMIT.toString(),
+        offset: offset.toString(),
+        sort_order: sortOrder,
+      });
+      if (status) params.append('status', status);
+      if (familyMemberId) params.append('family_member_id', familyMemberId);
+      if (debouncedSearch.trim()) params.append('search', debouncedSearch.trim());
+
+      const authToken = localStorage.getItem('auth_token') || 'default-user';
+      const response = await fetch(`/api/illnesses?${params}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch illnesses (${response.status})`);
+      }
+      const data = await response.json();
+      setIllnesses(data.data);
+      setTotal(data.pagination?.total || 0);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'An error occurred';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }, [offset, status, familyMemberId, debouncedSearch, sortOrder]);
+
   useEffect(() => {
     if (initialData.length > 0) return;
-
-    const fetchIllnesses = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const params = new URLSearchParams({
-          limit: LIMIT.toString(),
-          offset: offset.toString(),
-          sort_order: sortOrder,
-        });
-        if (status) params.append('status', status);
-        if (familyMemberId) params.append('family_member_id', familyMemberId);
-        if (debouncedSearch.trim()) params.append('search', debouncedSearch.trim());
-
-        const authToken = localStorage.getItem('auth_token') || 'default-user';
-        const response = await fetch(`/api/illnesses?${params}`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Failed to fetch illnesses (${response.status})`);
-        }
-        const data = await response.json();
-        setIllnesses(data.data);
-        setTotal(data.pagination?.total || 0);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'An error occurred';
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchIllnesses();
-  }, [offset, status, initialData.length, familyMemberId, debouncedSearch, sortOrder]);
+    loadIllnesses();
+  }, [initialData.length, loadIllnesses]);
 
   if (error) {
     return (
@@ -184,7 +184,11 @@ export function IllnessList({ initialData = [], totalCount = 0, status }: Illnes
         <>
           <div className="space-y-2">
             {illnesses.map((illness) => (
-              <IllnessCard key={illness.id} illness={illness} />
+              <IllnessCard
+                key={illness.id}
+                illness={illness}
+                onRecordDeleted={initialData.length > 0 ? undefined : loadIllnesses}
+              />
             ))}
           </div>
 
