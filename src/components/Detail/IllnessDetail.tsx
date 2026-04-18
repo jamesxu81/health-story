@@ -1,7 +1,100 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Illness } from '@/types/illness';
+
+function attachmentAuthHeaders(): HeadersInit {
+  const t =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('auth_token') || 'default-user'
+      : 'default-user';
+  return { Authorization: `Bearer ${t}` };
+}
+
+/** Private Vercel Blob URLs are not usable in <img src>; fetch via API with auth. */
+function RemoteAttachmentImage({ photoId, alt }: { photoId: string; alt: string }) {
+  const [src, setSrc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    let objUrl: string | null = null;
+    (async () => {
+      try {
+        const r = await fetch(`/api/attachments/${photoId}`, {
+          headers: attachmentAuthHeaders(),
+          signal: ac.signal,
+        });
+        if (!r.ok) {
+          setFailed(true);
+          return;
+        }
+        const b = await r.blob();
+        objUrl = URL.createObjectURL(b);
+        setSrc(objUrl);
+      } catch {
+        if (!ac.signal.aborted) setFailed(true);
+      }
+    })();
+    return () => {
+      ac.abort();
+      if (objUrl) URL.revokeObjectURL(objUrl);
+    };
+  }, [photoId]);
+
+  if (failed) {
+    return (
+      <div className="relative aspect-square rounded-[10px] overflow-hidden bg-vital-canvas flex items-center justify-center text-xs text-vital-muted px-2 text-center">
+        Could not load image
+      </div>
+    );
+  }
+  if (!src) {
+    return <div className="relative aspect-square rounded-[10px] overflow-hidden bg-vital-canvas animate-pulse" />;
+  }
+  return (
+    <div className="relative aspect-square rounded-[10px] overflow-hidden bg-vital-canvas">
+      <img src={src} alt={alt} className="w-full h-full object-cover" />
+    </div>
+  );
+}
+
+function RemotePdfButton({ photoId, filename }: { photoId: string; filename: string }) {
+  const [busy, setBusy] = useState(false);
+
+  const open = async () => {
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/attachments/${photoId}`, { headers: attachmentAuthHeaders() });
+      if (!r.ok) return;
+      const b = await r.blob();
+      const u = URL.createObjectURL(b);
+      window.open(u, '_blank', 'noopener,noreferrer');
+      window.setTimeout(() => URL.revokeObjectURL(u), 120_000);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={open}
+      disabled={busy}
+      className="flex items-center gap-2 p-3 rounded-[10px] border border-black/10 bg-vital-canvas hover:bg-vital-canvas/80 transition-colors min-h-[52px] w-full text-left disabled:opacity-60"
+    >
+      <span
+        className="shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-vital-amber-light text-vital-amber"
+        aria-hidden
+      >
+        PDF
+      </span>
+      <span className="text-sm font-medium text-vital-ink truncate">
+        {filename || 'PDF document'}
+      </span>
+    </button>
+  );
+}
 
 interface IllnessDetailProps {
   illness: Illness & { treatments: any[]; photos: any[] };
@@ -147,11 +240,21 @@ export function IllnessDetail({ illness, onEdit }: IllnessDetailProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {illness.photos.map((photo: any) => {
               const url = photo.thumbnail_url || photo.url || photo.blob_url;
+              const isRemoteBlob = typeof url === 'string' && url.startsWith('http');
               const mime = String(photo.mime_type || '');
               const isPdf =
                 mime === 'application/pdf' ||
                 (typeof photo.filename === 'string' && photo.filename.toLowerCase().endsWith('.pdf'));
               if (isPdf) {
+                if (isRemoteBlob) {
+                  return (
+                    <RemotePdfButton
+                      key={photo.id}
+                      photoId={photo.id}
+                      filename={photo.filename || 'PDF document'}
+                    />
+                  );
+                }
                 return (
                   <a
                     key={photo.id}
@@ -170,6 +273,15 @@ export function IllnessDetail({ illness, onEdit }: IllnessDetailProps) {
                       {photo.filename || 'PDF document'}
                     </span>
                   </a>
+                );
+              }
+              if (isRemoteBlob) {
+                return (
+                  <RemoteAttachmentImage
+                    key={photo.id}
+                    photoId={photo.id}
+                    alt={photo.filename ? `Attachment: ${photo.filename}` : 'Illness documentation'}
+                  />
                 );
               }
               return (

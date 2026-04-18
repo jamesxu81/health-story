@@ -31,3 +31,26 @@ export async function insertPhoto(params: {
   if (!row) throw new Error('Failed to save attachment');
   return row;
 }
+
+export async function getPhotoIfOwnedByUser(
+  photoId: string,
+  userId: string
+): Promise<{
+  blob_url: string;
+  mime_type: string;
+  filename: string;
+} | null> {
+  return queryOne<{
+    blob_url: string;
+    mime_type: string;
+    filename: string;
+  }>(
+    `
+    SELECT p.blob_url, p.mime_type, p.filename
+    FROM photos p
+    INNER JOIN illnesses i ON i.id = p.illness_id
+    WHERE p.id = $1 AND i.user_id = $2
+    `,
+    [photoId, userId]
+  );
+}

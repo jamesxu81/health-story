@@ -73,7 +73,7 @@ export async function uploadBlob(
   if (token) {
     try {
       const blob = await put(pathname, file, {
-        access: 'public',
+        access: 'private',
         token,
       });
 
