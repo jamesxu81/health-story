@@ -96,7 +96,11 @@ export default function HistoryDetailPage() {
           />
         </>
       ) : (
-        <IllnessDetail illness={illness} onEdit={() => setIsEditing(true)} />
+        <IllnessDetail
+          illness={illness}
+          onEdit={() => setIsEditing(true)}
+          onAttachmentRemoved={fetchIllness}
+        />
       )}
     </div>
   );

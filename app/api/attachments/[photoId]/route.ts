@@ -8,7 +8,7 @@ import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import { get } from '@vercel/blob';
 import { extractUserContext } from '@/lib/auth';
-import { getPhotoIfOwnedByUser } from '@/lib/db/queries/photo';
+import { getPhotoIfOwnedByUser, deletePhotoIfOwnedByUser } from '@/lib/db/queries/photo';
 import { errorToResponse } from '@/lib/errors';
 
 function getBlobToken(): string | null {
@@ -80,6 +80,35 @@ export async function GET(
         'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
       },
     });
+  } catch (error) {
+    const { body, status } = errorToResponse(error);
+    return NextResponse.json(body, { status });
+  }
+}
+
+/**
+ * DELETE /api/attachments/[photoId] — remove attachment (auth + ownership required).
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { photoId: string } }
+): Promise<NextResponse> {
+  try {
+    const headers: Record<string, string | string[] | undefined> = {};
+    request.headers.forEach((value, key) => {
+      headers[key.toLowerCase()] = value;
+    });
+    const { user_id } = extractUserContext(headers);
+
+    const removed = await deletePhotoIfOwnedByUser(params.photoId, user_id);
+    if (!removed) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { status: 'success', timestamp: new Date().toISOString() },
+      { status: 200 }
+    );
   } catch (error) {
     const { body, status } = errorToResponse(error);
     return NextResponse.json(body, { status });

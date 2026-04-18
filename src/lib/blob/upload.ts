@@ -103,31 +103,42 @@ export async function uploadBlob(
 }
 
 /**
- * Delete a file from Vercel Blob
+ * Remove a stored attachment: local file (`/photos/...`) or Vercel Blob (`https://...`).
  */
-export async function deleteBlob(blobPathname: string): Promise<void> {
-  const token = getBlobReadWriteToken();
-  if (token) {
-    try {
-      await del(blobPathname, { token });
-    } catch (error) {
-      console.error('Blob delete error:', error);
-      throw new Error('Failed to delete file from blob storage');
+export async function deleteStoredBlob(blobUrl: string): Promise<void> {
+  if (blobUrl.startsWith('/')) {
+    const relative = blobUrl.replace(/^\//, '');
+    if (relative.includes('..')) {
+      throw new Error('Invalid storage path');
     }
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-    const fullPath = path.join(process.cwd(), 'public', blobPathname);
+    const base = path.resolve(process.cwd(), 'public');
+    const fullPath = path.resolve(path.join(process.cwd(), 'public', relative));
+    if (!fullPath.startsWith(base)) {
+      throw new Error('Invalid storage path');
+    }
     try {
       await unlink(fullPath);
     } catch {
-      /* ignore missing file */
+      /* file may already be gone */
     }
     return;
   }
 
-  throw new Error('Blob storage is not configured (BLOB_READ_WRITE_TOKEN).');
+  const token = getBlobReadWriteToken();
+  if (!token) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[blob] BLOB_READ_WRITE_TOKEN not set; skipping remote blob delete');
+      return;
+    }
+    throw new Error('Blob storage is not configured (BLOB_READ_WRITE_TOKEN).');
+  }
+
+  try {
+    await del(blobUrl, { token });
+  } catch (error) {
+    console.error('Blob delete error:', error);
+    throw new Error('Failed to delete file from blob storage');
+  }
 }
 
 /**

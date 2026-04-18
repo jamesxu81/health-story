@@ -2,8 +2,9 @@
  * Photo / attachment records linked to an illness
  */
 
-import { queryOne } from '@/lib/db';
+import { queryOne, query } from '@/lib/db';
 import { PhotoRow } from '@/types/photo';
+import { deleteStoredBlob } from '@/lib/blob/upload';
 
 export async function insertPhoto(params: {
   illness_id: string;
@@ -53,4 +54,28 @@ export async function getPhotoIfOwnedByUser(
     `,
     [photoId, userId]
   );
+}
+
+/**
+ * Delete an attachment if it belongs to the user's illness. Removes blob/local file then DB row.
+ */
+export async function deletePhotoIfOwnedByUser(
+  photoId: string,
+  userId: string
+): Promise<boolean> {
+  const row = await getPhotoIfOwnedByUser(photoId, userId);
+  if (!row) return false;
+
+  await deleteStoredBlob(row.blob_url);
+
+  const result = await query(
+    `
+    DELETE FROM photos p
+    USING illnesses i
+    WHERE p.id = $1 AND p.illness_id = i.id AND i.user_id = $2
+    `,
+    [photoId, userId]
+  );
+
+  return (result.rowCount ?? 0) > 0;
 }
