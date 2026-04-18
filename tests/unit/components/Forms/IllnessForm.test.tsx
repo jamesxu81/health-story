@@ -33,6 +33,8 @@ describe('IllnessForm Component', () => {
     expect(screen.getByLabelText('Date Ended')).toBeInTheDocument();
     expect(screen.getByText('Add Symptoms')).toBeInTheDocument();
     expect(screen.getByLabelText('What might have caused it?')).toBeInTheDocument();
+    expect(screen.getByLabelText('Treatment')).toBeInTheDocument();
+    expect(screen.getByLabelText('Attachment (optional)')).toBeInTheDocument();
     expect(screen.getByLabelText('Notes for your future self')).toBeInTheDocument();
     expect(screen.getByText('Save to timeline')).toBeInTheDocument();
   });
@@ -243,6 +245,7 @@ describe('IllnessForm Component', () => {
     await waitFor(() => {
       const callBody = JSON.parse((mockFetch.mock.calls[0][1] as any).body);
       expect(callBody.cause).toBeNull();
+      expect(callBody.treat).toBeNull();
       expect(callBody.notes).toBeNull();
       expect(callBody.date_ended).toBeNull();
     });

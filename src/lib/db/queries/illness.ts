@@ -15,6 +15,8 @@ import {
   IllnessWithCounts,
   IllnessInput,
 } from '@/types/illness';
+import { getTreatmentsForIllness } from '@/lib/db/queries/treatment';
+import { Treatment } from '@/types/treatment';
 
 // Converters from DB row to TypeScript type
 
@@ -74,7 +76,7 @@ export async function getIllnessesByUser(params: {
   }
 
   if (params.search) {
-    whereClause += ` AND (i.name ILIKE $${paramIndex} OR i.cause ILIKE $${paramIndex})`;
+    whereClause += ` AND (i.name ILIKE $${paramIndex} OR i.cause ILIKE $${paramIndex} OR i.treat ILIKE $${paramIndex})`;
     values.push(`%${params.search}%`);
     paramIndex++;
   }
@@ -99,7 +101,7 @@ export async function getIllnessesByUser(params: {
     `
     SELECT 
       i.id, i.user_id, i.name, i.date_started, i.date_ended, 
-      i.status, i.symptoms, i.cause, i.notes, i.family_member_id,
+      i.status, i.symptoms, i.cause, i.treat, i.notes, i.family_member_id,
       i.created_at, i.updated_at,
       fm.name as family_member_name, fm.color as family_member_color,
       COUNT(DISTINCT t.id) as treatment_count,
@@ -147,7 +149,7 @@ export async function getIllnessById(illness_id: string): Promise<Illness | null
   const row = await queryOne<IllnessRow>(
     `
     SELECT id, user_id, name, date_started, date_ended, 
-           status, symptoms, cause, notes, family_member_id, created_at, updated_at
+           status, symptoms, cause, treat, notes, family_member_id, created_at, updated_at
     FROM illnesses
     WHERE id = $1
     `,
@@ -170,12 +172,12 @@ export async function createIllness(
   const row = await queryOne<IllnessRow>(
     `
     INSERT INTO illnesses
-    (user_id, name, date_started, date_ended, status, symptoms, cause, notes, family_member_id)
+    (user_id, name, date_started, date_ended, status, symptoms, cause, treat, notes, family_member_id)
     VALUES ($1, $2, $3, $4::date, 
             CASE WHEN $4::date IS NOT NULL THEN 'resolved' ELSE 'active' END,
-            $5::jsonb, $6, $7, $8)
+            $5::jsonb, $6, $7, $8, $9)
     RETURNING id, user_id, name, date_started, date_ended, 
-              status, symptoms, cause, notes, family_member_id, created_at, updated_at
+              status, symptoms, cause, treat, notes, family_member_id, created_at, updated_at
     `,
     [
       user_id,
@@ -184,6 +186,7 @@ export async function createIllness(
       input.date_ended || null,
       symptomsJson,
       input.cause || null,
+      input.treat || null,
       input.notes || null,
       input.family_member_id || null,
     ]
@@ -236,6 +239,12 @@ export async function updateIllness(
     paramIndex++;
   }
 
+  if (input.treat !== undefined) {
+    updates.push(`treat = $${paramIndex}`);
+    values.push(input.treat || null);
+    paramIndex++;
+  }
+
   if (input.notes !== undefined) {
     updates.push(`notes = $${paramIndex}`);
     values.push(input.notes || null);
@@ -268,7 +277,7 @@ export async function updateIllness(
     SET ${updates.join(', ')}
     WHERE id = $1 AND user_id = $2
     RETURNING id, user_id, name, date_started, date_ended, 
-              status, symptoms, cause, notes, family_member_id, created_at, updated_at
+              status, symptoms, cause, treat, notes, family_member_id, created_at, updated_at
     `,
     values
   );
@@ -304,7 +313,7 @@ export async function getIllnessDetail(illness_id: string): Promise<Illness | nu
   const row = await queryOne<IllnessRow>(
     `
     SELECT id, user_id, name, date_started, date_ended, 
-           status, symptoms, cause, notes, family_member_id, created_at, updated_at
+           status, symptoms, cause, treat, notes, family_member_id, created_at, updated_at
     FROM illnesses
     WHERE id = $1
     `,
@@ -313,4 +322,55 @@ export async function getIllnessDetail(illness_id: string): Promise<Illness | nu
 
   if (!row) return null;
   return parseIllnessRow(row);
+}
+
+export type IllnessRelationPhoto = {
+  id: string;
+  url: string;
+  thumbnail_url: string;
+  mime_type: string;
+  filename: string;
+  size_bytes: number;
+};
+
+/**
+ * Illness with treatments and file attachments for the detail API (user must own the record).
+ */
+export async function getIllnessWithRelationsForUser(
+  illness_id: string,
+  user_id: string
+): Promise<(Illness & { treatments: Treatment[]; photos: IllnessRelationPhoto[] }) | null> {
+  const illness = await getIllnessById(illness_id);
+  if (!illness || illness.user_id !== user_id) {
+    return null;
+  }
+
+  const { treatments } = await getTreatmentsForIllness(illness_id, undefined, 50, 0);
+
+  const photoRows = await queryAll<{
+    id: string;
+    blob_url: string;
+    mime_type: string;
+    filename: string;
+    size_bytes: number;
+  }>(
+    `
+    SELECT id, blob_url, mime_type, filename, size_bytes
+    FROM photos
+    WHERE illness_id = $1
+    ORDER BY created_at DESC
+    `,
+    [illness_id]
+  );
+
+  const photos: IllnessRelationPhoto[] = photoRows.map((p) => ({
+    id: p.id,
+    url: p.blob_url,
+    thumbnail_url: p.blob_url,
+    mime_type: p.mime_type,
+    filename: p.filename,
+    size_bytes: p.size_bytes,
+  }));
+
+  return { ...illness, treatments, photos };
 }

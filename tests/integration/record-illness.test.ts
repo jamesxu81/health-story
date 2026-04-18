@@ -21,6 +21,7 @@ describe('Record Illness Integration', () => {
         },
       ],
       cause: 'Stress',
+      treat: null,
       notes: 'Woke up with severe headache',
     };
 
@@ -36,6 +37,7 @@ describe('Record Illness Integration', () => {
       date_ended: null,
       symptoms: [],
       cause: null,
+      treat: null,
       notes: null,
     };
 

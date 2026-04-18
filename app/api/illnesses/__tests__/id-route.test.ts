@@ -1,20 +1,30 @@
 /** @jest-environment node */
 
+import { NextRequest } from 'next/server';
+
 jest.mock('@/lib/db/queries/illness', () => ({
-  getIllnessDetail: jest.fn(),
+  getIllnessWithRelationsForUser: jest.fn(),
 }));
 
-const { getIllnessDetail } = jest.requireMock('@/lib/db/queries/illness') as {
-  getIllnessDetail: jest.Mock;
+const { getIllnessWithRelationsForUser } = jest.requireMock('@/lib/db/queries/illness') as {
+  getIllnessWithRelationsForUser: jest.Mock;
 };
 
 const { GET } = require('../[id]/route') as typeof import('../[id]/route');
 
+function requestWithAuth(url: string) {
+  return new NextRequest(url, {
+    headers: { authorization: 'Bearer default-user' },
+  });
+}
+
 describe('GET /api/illnesses/[id]', () => {
   it('returns 404 when illness does not exist', async () => {
-    getIllnessDetail.mockResolvedValueOnce(null);
+    getIllnessWithRelationsForUser.mockResolvedValueOnce(null);
 
-    const res = await GET({} as any, { params: { id: 'missing-id' } });
+    const res = await GET(requestWithAuth('http://localhost/api/illnesses/missing-id'), {
+      params: { id: 'missing-id' },
+    });
 
     expect(res.status).toBe(404);
     await expect(res.json()).resolves.toMatchObject({
@@ -25,15 +35,21 @@ describe('GET /api/illnesses/[id]', () => {
   });
 
   it('returns 200 with illness data when found', async () => {
-    getIllnessDetail.mockResolvedValueOnce({ id: 'abc', name: 'Test' });
+    getIllnessWithRelationsForUser.mockResolvedValueOnce({
+      id: 'abc',
+      name: 'Test',
+      treatments: [],
+      photos: [],
+    });
 
-    const res = await GET({} as any, { params: { id: 'abc' } });
+    const res = await GET(requestWithAuth('http://localhost/api/illnesses/abc'), {
+      params: { id: 'abc' },
+    });
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toMatchObject({
       status: 'success',
-      data: { id: 'abc', name: 'Test' },
+      data: { id: 'abc', name: 'Test', treatments: [], photos: [] },
     });
   });
 });
-

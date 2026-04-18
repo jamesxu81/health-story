@@ -23,6 +23,7 @@ export const illnessSchema = z.object({
   date_ended: z.string().date().nullable().optional(),
   symptoms: z.array(symptomSchema).min(0).max(50),
   cause: z.string().max(1000).optional().nullable(),
+  treat: z.string().max(2000).optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
   family_member_id: z.string().uuid().nullable().optional(),
 });

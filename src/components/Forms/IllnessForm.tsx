@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { SymptomInput } from './SymptomInput';
 import { MemberPicker } from '@/components/Family/MemberPicker';
@@ -16,6 +16,7 @@ interface IllnessFormProps {
     date_ended: Date | string | null;
     symptoms: Symptom[];
     cause: string | null;
+    treat: string | null;
     notes: string | null;
     family_member_id: string | null;
   };
@@ -23,6 +24,8 @@ interface IllnessFormProps {
 
 const inputClasses =
   'w-full px-4 py-3 bg-white border border-black/10 rounded-[10px] text-sm text-vital-ink placeholder:text-vital-muted-2 focus:ring-2 focus:ring-vital-teal/20 focus:border-vital-teal transition-colors';
+
+const ATTACHMENT_ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,application/pdf,.pdf';
 
 function toDateString(d: Date | string | null | undefined): string {
   if (!d) return '';
@@ -32,9 +35,11 @@ function toDateString(d: Date | string | null | undefined): string {
 
 export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormProps) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditing = !!initialData;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [attachment, setAttachment] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
     name: initialData?.name ?? '',
@@ -42,6 +47,7 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
     date_ended: toDateString(initialData?.date_ended),
     symptoms: initialData?.symptoms ?? ([] as Symptom[]),
     cause: initialData?.cause ?? '',
+    treat: initialData?.treat ?? '',
     notes: initialData?.notes ?? '',
     family_member_id: initialData?.family_member_id ?? null as string | null,
   });
@@ -74,6 +80,7 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
           date_ended: formData.date_ended || null,
           symptoms: formData.symptoms,
           cause: formData.cause.trim() || null,
+          treat: formData.treat.trim() || null,
           notes: formData.notes.trim() || null,
           family_member_id: formData.family_member_id,
         };
@@ -97,8 +104,34 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
         }
 
         const { data } = await response.json();
+        const illnessId = data.id as string;
+
+        if (attachment) {
+          const fd = new FormData();
+          fd.append('file', attachment);
+          const uploadRes = await fetch(`/api/illnesses/${illnessId}/photos`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: fd,
+          });
+          if (!uploadRes.ok) {
+            let msg = 'Failed to upload attachment';
+            try {
+              const errBody = await uploadRes.json();
+              if (errBody?.error) msg = errBody.error;
+            } catch {
+              /* ignore */
+            }
+            throw new Error(msg);
+          }
+          setAttachment(null);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+
         if (onSuccess) {
-          onSuccess(data.id);
+          onSuccess(illnessId);
         } else {
           router.push('/history');
         }
@@ -109,7 +142,7 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
         setLoading(false);
       }
     },
-    [formData, onSuccess, router, isEditing, initialData]
+    [formData, attachment, onSuccess, router, isEditing, initialData]
   );
 
   return (
@@ -192,6 +225,55 @@ export function IllnessForm({ onSuccess, onCancel, initialData }: IllnessFormPro
               className={inputClasses}
               maxLength={1000}
             />
+          </div>
+
+          <div>
+            <label htmlFor="treat" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
+              Treatment
+            </label>
+            <textarea
+              id="treat"
+              name="treat"
+              value={formData.treat}
+              onChange={handleInputChange}
+              placeholder="e.g., Rest, fluids, medicine, what seemed to help"
+              rows={2}
+              className={inputClasses + ' resize-none'}
+              maxLength={2000}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="attachment" className="block text-[11px] font-semibold text-vital-muted uppercase tracking-[0.4px] mb-1.5">
+              Attachment (optional)
+            </label>
+            <p className="text-[12px] text-vital-muted mb-2">Image or PDF, up to 25&nbsp;MB.</p>
+            <input
+              ref={fileInputRef}
+              id="attachment"
+              type="file"
+              accept={ATTACHMENT_ACCEPT}
+              className={`${inputClasses} py-2 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[12px] file:font-medium file:bg-vital-teal-light file:text-vital-teal`}
+              onChange={(e) => {
+                const f = e.target.files?.[0] ?? null;
+                setAttachment(f);
+              }}
+            />
+            {attachment && (
+              <div className="mt-2 flex items-center justify-between gap-2 text-[12px] text-vital-ink">
+                <span className="truncate">{attachment.name}</span>
+                <button
+                  type="button"
+                  className="shrink-0 text-vital-teal font-medium hover:underline"
+                  onClick={() => {
+                    setAttachment(null);
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
           </div>
 
           <div>

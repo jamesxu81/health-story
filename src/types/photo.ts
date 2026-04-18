@@ -53,5 +53,11 @@ export interface PhotoUploadResponse {
  */
 export const PHOTO_CONSTRAINTS = {
   MAX_SIZE_BYTES: 25 * 1024 * 1024, // 25MB
-  ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  ALLOWED_TYPES: [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'application/pdf',
+  ],
 } as const;

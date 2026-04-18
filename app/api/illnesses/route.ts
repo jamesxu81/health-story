@@ -6,8 +6,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { extractUserContext } from '@/lib/auth';
-import { validateInput, illnessFilterSchema, illnessSchema } from '@/lib/validation/schemas';
-import { getIllnessesByUser, createIllness } from '@/lib/db/queries/illness';
+import { validateInput, illnessFilterSchema } from '@/lib/validation/schemas';
+import { getIllnessesByUser } from '@/lib/db/queries/illness';
+import { createIllnessFromJsonRequest } from '@/lib/api/create-illness-record';
 import { ApiResponse, PaginatedResponse } from '@/types/api';
 import { IllnessWithCounts } from '@/types/illness';
 import { errorToResponse } from '@/lib/errors';
@@ -78,27 +79,11 @@ export async function GET(request: NextRequest): Promise<
 
 /**
  * POST /api/illnesses
- * Create a new illness record
+ * Create a new illness record (same as POST /api/records).
  */
 export async function POST(request: NextRequest): Promise<NextResponse<ApiResponse<any> | any>> {
   try {
-    // Extract user context from headers
-    const headers: Record<string, string | string[] | undefined> = {};
-    request.headers?.forEach((value, key) => {
-      headers[key.toLowerCase()] = value;
-    });
-
-    const authContext = extractUserContext(headers);
-    const { user_id } = authContext;
-
-    // Parse request body
-    const body = await request.json();
-
-    // Validate input
-    const input = validateInput(illnessSchema, body);
-
-    // Create illness in database
-    const illness = await createIllness(user_id, input);
+    const illness = await createIllnessFromJsonRequest(request);
 
     const response: ApiResponse<typeof illness> = {
       data: illness,

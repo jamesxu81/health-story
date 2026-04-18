@@ -20,6 +20,7 @@ describe('IllnessCard Component', () => {
       { name: 'Fever', severity: 'mild', duration: null },
     ],
     cause: 'Exposure at work',
+    treat: null,
     notes: 'Test note',
     treatment_count: 2,
     photo_count: 1,

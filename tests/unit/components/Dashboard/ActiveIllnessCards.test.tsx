@@ -16,6 +16,7 @@ const makeIllness = (overrides: Partial<IllnessWithCounts> = {}): IllnessWithCou
   status: 'active',
   symptoms: [{ name: 'Cough', severity: 'mild', duration: null }],
   cause: null,
+  treat: null,
   notes: null,
   created_at: new Date(),
   updated_at: new Date(),

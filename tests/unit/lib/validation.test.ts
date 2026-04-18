@@ -53,6 +53,7 @@ describe('Validation Schemas', () => {
           { name: 'Cough', severity: 'moderate', duration: '3 days' },
         ],
         cause: 'Exposure at work',
+        treat: 'Rest and tea',
         notes: 'Used honey lozenges',
       };
       const result = illnessSchema.safeParse(data);

@@ -18,6 +18,7 @@ export interface Illness {
   status: 'active' | 'resolved';
   symptoms: Symptom[];
   cause: string | null;
+  treat: string | null;
   notes: string | null;
   family_member_id: string | null;
   created_at: Date;
@@ -49,6 +50,7 @@ export interface IllnessRow {
   status: 'active' | 'resolved';
   symptoms: string; // JSON stringified
   cause: string | null;
+  treat: string | null;
   notes: string | null;
   family_member_id: string | null;
   created_at: string; // ISO timestamp
@@ -68,6 +70,7 @@ export interface IllnessInput {
     duration?: string | null;
   }>;
   cause?: string | null;
+  treat?: string | null;
   notes?: string | null;
   family_member_id?: string | null;
 }

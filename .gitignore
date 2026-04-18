@@ -11,6 +11,9 @@ pnpm-lock.yaml
 # Next.js
 .next/
 out/
+
+# Local dev uploads (when BLOB_READ_WRITE_TOKEN is unset)
+public/photos/
 build/
 dist/
 *.tsbuildinfo

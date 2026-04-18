@@ -16,6 +16,7 @@ const makeIllness = (name: string, id: string): IllnessWithCounts => ({
   status: 'active',
   symptoms: [],
   cause: null,
+  treat: null,
   notes: null,
   created_at: new Date(),
   updated_at: new Date(),

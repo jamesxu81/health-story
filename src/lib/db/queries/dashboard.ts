@@ -32,7 +32,7 @@ export async function getActiveIllnesses(
     `
     SELECT
       i.id, i.user_id, i.name, i.date_started, i.date_ended,
-      i.status, i.symptoms, i.cause, i.notes, i.family_member_id,
+      i.status, i.symptoms, i.cause, i.treat, i.notes, i.family_member_id,
       i.created_at, i.updated_at,
       fm.name AS family_member_name, fm.color AS family_member_color,
       COALESCE(COUNT(DISTINCT t.id), 0)::int AS treatment_count,

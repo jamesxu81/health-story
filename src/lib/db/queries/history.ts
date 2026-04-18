@@ -29,6 +29,7 @@ export async function getIllnessesForHistory(
       i.status,
       i.symptoms,
       i.cause,
+      i.treat,
       i.notes,
       COALESCE(COUNT(DISTINCT t.id), 0)::int as treatment_count,
       COALESCE(COUNT(DISTINCT p.id), 0)::int as photo_count
@@ -89,6 +90,7 @@ export async function getIllnessDetailForView(
       i.status,
       i.symptoms,
       i.cause,
+      i.treat,
       i.notes,
       i.created_at,
       i.updated_at
@@ -120,7 +122,7 @@ export async function getIllnessDetailForView(
 
   // Fetch photos
   const photosQuery = `
-    SELECT id, url, thumbnail_url, notes, created_at
+    SELECT id, blob_url AS url, blob_url AS thumbnail_url, mime_type, filename, size_bytes, created_at
     FROM photos
     WHERE illness_id = $1
     ORDER BY created_at DESC

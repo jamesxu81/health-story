@@ -8,7 +8,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractUserContext } from '@/lib/auth';
 import { validateInput, illnessUpdateSchema } from '@/lib/validation/schemas';
-import { getIllnessDetail, updateIllness, deleteIllness } from '@/lib/db/queries/illness';
+import {
+  getIllnessWithRelationsForUser,
+  updateIllness,
+  deleteIllness,
+} from '@/lib/db/queries/illness';
 import { ApiResponse } from '@/types/api';
 import { NotFoundError, errorToResponse } from '@/lib/errors';
 
@@ -20,9 +24,16 @@ export async function GET(
   { params }: { params: { id: string } }
 ): Promise<NextResponse<ApiResponse<any> | any>> {
   try {
+    const headers: Record<string, string | string[] | undefined> = {};
+    request.headers.forEach((value, key) => {
+      headers[key.toLowerCase()] = value;
+    });
+
+    const authContext = extractUserContext(headers);
+    const { user_id } = authContext;
     const { id } = params;
 
-    const illness = await getIllnessDetail(id);
+    const illness = await getIllnessWithRelationsForUser(id, user_id);
     if (!illness) {
       throw new NotFoundError('Illness');
     }

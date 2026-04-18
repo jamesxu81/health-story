@@ -58,6 +58,19 @@ export function IllnessDetail({ illness, onEdit }: IllnessDetailProps) {
         </div>
       )}
 
+      {/* Treatment (free text on record) */}
+      {illness.treat && (
+        <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
+          <div className="flex items-center gap-2.5 mb-3">
+            <span className="w-8 h-8 rounded-lg bg-vital-teal-light flex items-center justify-center text-sm" aria-hidden>
+              🩹
+            </span>
+            <h2 className="font-display text-[15px] font-semibold text-vital-ink">Treatment</h2>
+          </div>
+          <p className="text-sm text-vital-ink/80 leading-relaxed whitespace-pre-wrap">{illness.treat}</p>
+        </div>
+      )}
+
       {/* Symptoms */}
       {illness.symptoms && illness.symptoms.length > 0 && (
         <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
@@ -122,25 +135,53 @@ export function IllnessDetail({ illness, onEdit }: IllnessDetailProps) {
         </div>
       )}
 
-      {/* Photos */}
+      {/* Attachments (images, PDFs) */}
       {illness.photos && illness.photos.length > 0 && (
         <div className="bg-white rounded-[14px] border border-black/10 p-5 sm:p-6">
           <div className="flex items-center gap-2.5 mb-4">
             <span className="w-8 h-8 rounded-lg bg-vital-blue-light flex items-center justify-center text-sm" aria-hidden>
               📷
             </span>
-            <h2 className="font-display text-[15px] font-semibold text-vital-ink">Photos</h2>
+            <h2 className="font-display text-[15px] font-semibold text-vital-ink">Attachments</h2>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            {illness.photos.map((photo: any) => (
-              <div key={photo.id} className="relative aspect-square rounded-[10px] overflow-hidden bg-vital-canvas">
-                <img
-                  src={photo.thumbnail_url || photo.url}
-                  alt="Illness documentation"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {illness.photos.map((photo: any) => {
+              const url = photo.thumbnail_url || photo.url || photo.blob_url;
+              const mime = String(photo.mime_type || '');
+              const isPdf =
+                mime === 'application/pdf' ||
+                (typeof photo.filename === 'string' && photo.filename.toLowerCase().endsWith('.pdf'));
+              if (isPdf) {
+                return (
+                  <a
+                    key={photo.id}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-3 rounded-[10px] border border-black/10 bg-vital-canvas hover:bg-vital-canvas/80 transition-colors min-h-[52px]"
+                  >
+                    <span
+                      className="shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-vital-amber-light text-vital-amber"
+                      aria-hidden
+                    >
+                      PDF
+                    </span>
+                    <span className="text-sm font-medium text-vital-ink truncate">
+                      {photo.filename || 'PDF document'}
+                    </span>
+                  </a>
+                );
+              }
+              return (
+                <div key={photo.id} className="relative aspect-square rounded-[10px] overflow-hidden bg-vital-canvas">
+                  <img
+                    src={url}
+                    alt={photo.filename ? `Attachment: ${photo.filename}` : 'Illness documentation'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
