@@ -74,3 +74,11 @@ export interface IllnessInput {
   notes?: string | null;
   family_member_id?: string | null;
 }
+
+/**
+ * Input shape for updating an illness record.
+ * Supports direct status toggles (e.g. setting resolved from timeline/api clients).
+ */
+export interface IllnessUpdateInput extends Partial<IllnessInput> {
+  status?: 'active' | 'resolved';
+}

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest): Promise<
       date_to: searchParams.get('date_to'),
       search: searchParams.get('search'),
       family_member_id: searchParams.get('family_member_id'),
-      sort_order: searchParams.get('sort_order'),
+      sort_order: searchParams.get('sort_order') || 'desc',
       limit: searchParams.get('limit') || '50',
       offset: searchParams.get('offset') || '0',
     };

@@ -31,7 +31,9 @@ export const illnessSchema = z.object({
 /**
  * Illness update schema (all fields optional)
  */
-export const illnessUpdateSchema = illnessSchema.partial();
+export const illnessUpdateSchema = illnessSchema.partial().extend({
+  status: z.enum(['active', 'resolved']).optional(),
+});
 
 /**
  * Treatment creation/update schema

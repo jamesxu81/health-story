@@ -14,6 +14,7 @@ import {
   IllnessRow,
   IllnessWithCounts,
   IllnessInput,
+  IllnessUpdateInput,
 } from '@/types/illness';
 import { getTreatmentsForIllness } from '@/lib/db/queries/treatment';
 import { Treatment } from '@/types/treatment';
@@ -202,7 +203,7 @@ export async function createIllness(
 export async function updateIllness(
   illness_id: string,
   user_id: string,
-  input: Partial<IllnessInput>
+  input: IllnessUpdateInput
 ): Promise<Illness> {
   // Build dynamic update query
   const updates: string[] = [];
@@ -221,9 +222,23 @@ export async function updateIllness(
     paramIndex++;
   }
 
-  if (input.date_ended !== undefined) {
-    updates.push(`date_ended = $${paramIndex}`);
-    values.push(input.date_ended || null);
+  let nextDateEnded: string | null | undefined = input.date_ended ?? undefined;
+  let nextStatus: 'active' | 'resolved' | undefined = input.status;
+
+  // Keep status and date_ended consistent for partial updates.
+  if (nextStatus === 'resolved' && !nextDateEnded) {
+    nextDateEnded = formatDateForSQL(new Date());
+  }
+  if (nextStatus === 'active') {
+    nextDateEnded = null;
+  }
+  if (nextStatus === undefined && nextDateEnded !== undefined) {
+    nextStatus = nextDateEnded ? 'resolved' : 'active';
+  }
+
+  if (nextDateEnded !== undefined) {
+    updates.push(`date_ended = $${paramIndex}::date`);
+    values.push(nextDateEnded);
     paramIndex++;
   }
 
@@ -257,9 +272,10 @@ export async function updateIllness(
     paramIndex++;
   }
 
-  // Update status if date_ended changed
-  if (input.date_ended !== undefined) {
-    updates.push(`status = CASE WHEN date_ended IS NOT NULL THEN 'resolved' ELSE 'active' END`);
+  if (nextStatus !== undefined) {
+    updates.push(`status = $${paramIndex}`);
+    values.push(nextStatus);
+    paramIndex++;
   }
 
   updates.push(`updated_at = CURRENT_TIMESTAMP`);
